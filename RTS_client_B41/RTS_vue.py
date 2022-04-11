@@ -307,8 +307,8 @@ class Vue():
         self.canevas.tag_bind("champignons", "<Button-1>", self.ramasser_ressource)
         self.canevas.tag_bind("daim", "<Button-1>", self.chasser_ressource)
         self.canevas.tag_bind("fournaise", "<Button-1>", self.ramasser_ressource)
-        self.canevas.tag_bind("batiment", "<Button-3>", self.subcrafting)
-        self.canevas.tag_bind("batiment", "<Button-3>", self.spawn_guerrier)
+        self.canevas.tag_bind("forge", "<Button-3>", self.subcrafting)
+        self.canevas.tag_bind("caserne", "<Button-3>", self.spawn_guerrier)
         self.canevas.bind("<Control-Button-1>", self.parent.montrer_stats)
 
     def defiler_vertical(self, evt):
