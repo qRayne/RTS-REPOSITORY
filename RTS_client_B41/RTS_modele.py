@@ -565,6 +565,7 @@ class Guerrier(Perso):
     def __init__(self, parent, id, maison, couleur, x, y, montype):
         Perso.__init__(self, parent, id, maison, couleur, x, y, montype)
         self.force = 20
+        self.etat = "vivant"
 
 
 class Archer(Perso):
@@ -1206,9 +1207,12 @@ class Joueur():
 
 
     def volerrune(self,mestags):
-        steleAttaquerid = None
-        steleClickee = mestags[2]
+        steleClicker = self.parent.actionCouranteVoler[0]
 
+        if id(self.stele) == steleClicker:
+            print("même stêle")
+        else:
+            print("pas la même stêle")
         # if self.stele.id != steleClickee:
         #     steleAttaquerid = steleClickee
         # else:
@@ -1274,6 +1278,7 @@ class Partie():
         self.cartecase = []
         self.make_carte_case()
         self.listeStele = []
+        self.actionCouranteVoler = None
 
         self.delaiprochaineaction = 20
 
