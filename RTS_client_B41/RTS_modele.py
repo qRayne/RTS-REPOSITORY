@@ -584,8 +584,8 @@ class Ouvrier(Perso):
         Perso.__init__(self, parent, id, maison, couleur, x, y, montype)
         self.activite = None  # sedeplacer, cueillir, chasser, pecher, construire, reparer, attaquer, fuir, promener,explorer,chercher
         self.typeressource = None
-        self.quota = 5
-        self.ramassage = 20
+        self.quota = 20
+        self.ramassage = 0
         self.qteramassage = 1
         self.cibletemp = None
         self.dejavisite = []
@@ -1089,8 +1089,7 @@ class Joueur():
                 p.vie += (10 * self.arumureniveau)
 
                 if p.montype == "ouvrier":
-                    p.quota = 5 + (2 * self.outilsniveau)
-                    p.qteramassage = 1 + (1 * self.outilsniveau)
+                    p.quota = 20 + (3 * self.outilsniveau)
 
 
     def volerrune(self,mestags):
