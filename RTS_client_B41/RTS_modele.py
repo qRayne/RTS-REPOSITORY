@@ -771,7 +771,7 @@ class Ouvrier(Perso):
             self.ramassage += self.qteramassage
             self.cible.valeur -= self.qteramassage
         print("valeur: ", self.cible.valeur)
-        if self.cible.valeur == 0 or self.ramassage >= self.quota:
+        if self.cible.valeur <= 0 or self.ramassage >= self.quota:
             self.actioncourante = "retourbatimentmere"
             self.position_visee = [self.batimentmere.x, self.batimentmere.y]
             if self.cible.valeur <= 0:
@@ -1204,6 +1204,7 @@ class Joueur():
 
                 if p.montype == "ouvrier":
                     p.quota = 20 + (3 * self.outilsniveau)
+                    p.qteramassage = 1 + (2 * self.outilsniveau)
 
 
     def volerrune(self,mestags):
