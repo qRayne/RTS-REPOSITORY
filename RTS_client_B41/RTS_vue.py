@@ -871,11 +871,9 @@ class Vue():
             self.action.construire_batiment(pos)
 
     def volerrune(self,evt):
-        mestags = self.canevas.gettags(CURRENT)
-        pos = (self.canevas.canvasx(evt.x),self.canevas.canvasy(evt.y))
-        action = [self.parent.monnom,"volerrune",["soldat",mestags[4],mestags[2],pos]]
-        self.action.voler_rune(action)
-
+        tag = self.canevas.gettags(CURRENT)
+        if self.action.persochoisi:
+            self.action.voler_rune(tag)
 
     def creer_guerrier(self, x, y, mestags):
         pos = (self.canevas.canvasx(x), self.canevas.canvasy(y))
@@ -974,11 +972,13 @@ class Action():
             action = [self.parent.monnom, "chatter", [self.parent.monnom + ": " + txt, self.parent.monnom, joueur]]
             self.parent.parent.actionsrequises.append(action)
 
-    def voler_rune(self,action):
+    def voler_rune(self,tag):
         if self.persochoisi:
-            self.parent.parent.actionsrequises.append(action)
-            mestags = self.parent.canevas.gettags(CURRENT)
-            self.parent.modele.actionCouranteVoler = mestags
+            for i in self.parent.modele.joueurs[self.parent.monnom].persos["soldat"]:
+                for j in self.persochoisi:
+                    if j == i:
+                        action = [self.parent.parent.monnom, "volerrune", [tag[1], tag[4], tag[2], self.persochoisi]]
+                        self.parent.parent.actionsrequises.append(action)
 
     def chatter(self):
         if self.chaton == 0:

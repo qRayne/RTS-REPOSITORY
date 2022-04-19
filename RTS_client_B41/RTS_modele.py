@@ -1208,22 +1208,21 @@ class Joueur():
 
 
     def volerrune(self,mestags):
-        steleClicker = self.parent.actionCouranteVoler[0]
+        steleAttaquer = mestags[2]
 
-        if id(self.stele) == steleClicker:
-            print("même stêle")
+        if self.stele.id == steleAttaquer:
+            print("même stèle")
         else:
-            print("pas la même stêle")
-        # if self.stele.id != steleClickee:
-        #     steleAttaquerid = steleClickee
-        # else:
-        #     print("même stèle")
-        #
-        # if steleAttaquerid is not None:
-        #     for i in self.parent.listeStele:
-        #         if i.id == steleAttaquerid:
-        #             steleEnnemie = i
-        #             self.stele.incrementerRune(steleEnnemie)
+            print("stèle ennemie qui va être attaquer ")
+            for stele in self.parent.listeStele:
+                if steleAttaquer == stele.id:
+                    objetStele = stele
+            for i in self.persos['soldat']:
+                if i == mestags[3][0]:
+                    soldat = self.persos['soldat'][i]
+                    print("soldat en mouvement")
+                    soldat.x = objetStele.x
+                    soldat.y = objetStele.y
 
 
 
@@ -1279,7 +1278,6 @@ class Partie():
         self.cartecase = []
         self.make_carte_case()
         self.listeStele = []
-        self.actionCouranteVoler = None
 
         self.delaiprochaineaction = 20
 
