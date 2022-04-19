@@ -290,7 +290,7 @@ class Vue():
         self.canevas.bind("<MouseWheel>", self.defiler_vertical)
         self.canevas.bind("<Control-MouseWheel>", self.defiler_horizon)
 
-        # acgtions liées aux objets dessinés par tag
+        # actions liées aux objets dessinés par tag
         self.canevas.tag_bind("batiment", "<Button-1>", self.creer_entite)
         self.canevas.tag_bind("ferme", "<Button-1>", self.ramasser_ressource)
         self.canevas.tag_bind("perso", "<Button-1>", self.ajouter_selection)
@@ -445,7 +445,10 @@ class Vue():
 
     def upgrade(self, upgradetype, player):
         obj = self.modele.joueurs[self.parent.monnom].mamaison
+        action = [self.monnom, "upgrade", [upgradetype]]
+        self.parent.actionsrequises.append(action)
         joueur = self.modele.joueurs[self.parent.monnom]
+
         self.modele.joueurs[player].upgrade(upgradetype)
         self.textchaussure.set(str(obj.ressources["metal"]) + "/" + str(2 + (2 * joueur.chaussureniveau)))
         self.textoutil.set(str(obj.ressources["metal"]) + "/" + str(2 + (2 * joueur.outilsniveau)))
