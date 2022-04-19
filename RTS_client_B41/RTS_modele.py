@@ -500,6 +500,8 @@ class Perso():
             dist = Helper.calcDistance(self.x, self.y, x, y)
             if dist <= self.vitesse:
                 if self.actioncourante == "bouger":
+                    self.x = x
+                    self.y = y
                     self.actioncourante = None
                 return "rendu"
             else:
@@ -531,7 +533,7 @@ class Perso():
         case = self.parent.parent.trouver_case(x1, y1)
         #
         # test si different de 0 (0=plaine), voir Partie pour attribution des valeurs
-        if case.montype != "plaine":
+        if case.montype != "plaine" or case.montype != "foretnoire" or case.montype != "prairie":
             # test pour être sur que de n'est 9 (9=batiment)
             if case.montype != "batiment":
                 print("marche dans ", case.montype)
@@ -764,9 +766,14 @@ class Ouvrier(Perso):
 
     def ramasser(self):
         if self.delailoop == 25:
-            self.ramassage += self.qteramassage
-            self.cible.valeur -= self.qteramassage
-        print("valeur: ", self.cible.valeur)
+
+            if self.cible.valeur < self.qteramassage:
+                self.ramassage += self.cible.valeur
+                self.cible.valeur = 0
+            else:
+                self.ramassage += self.qteramassage
+                self.cible.valeur -= self.qteramassage
+            print("valeur: ", self.cible.valeur)
         if self.cible.valeur <= 0 or self.ramassage >= self.quota:
             self.actioncourante = "retourbatimentmere"
             self.position_visee = [self.batimentmere.x, self.batimentmere.y]
