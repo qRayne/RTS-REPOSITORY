@@ -1214,11 +1214,13 @@ class Joueur():
                 if steleAttaquer == stele.id:
                     objetStele = stele
             for i in self.persos['soldat']:
-                if i == mestags[3][0]:
+                idSoldat = 0
+                if i == mestags[3][idSoldat]:
                     soldat = self.persos['soldat'][i]
                     print("soldat en mouvement")
                     soldat.x = objetStele.x
                     soldat.y = objetStele.y
+                idSoldat += 1
 
             self.stele.incrementerRune(objetStele)
 
