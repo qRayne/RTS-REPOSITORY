@@ -136,10 +136,6 @@ class Stele:
         if self.rune > 0:
             self.rune -= 1
 
-    def decrementerRune(self):
-        if self.rune > 0:
-            self.rune -= 1
-
     def incrementerPointsSec(self):
         tempsB = int(time.time())
 
@@ -1224,6 +1220,7 @@ class Joueur():
                     soldat.x = objetStele.x
                     soldat.y = objetStele.y
 
+            self.stele.incrementerRune(objetStele)
 
 
 #######################  LE MODELE est la partie #######################
