@@ -47,7 +47,7 @@ class Batiment():
             return 1
 
 
-class Maison(Batiment):
+class MaisonLongue(Batiment):
     def __init__(self, parent, id, couleur, x, y, montype):
         Batiment.__init__(self, parent, id, x, y)
         self.image = couleur[0] + "_" + montype
@@ -971,7 +971,8 @@ class Joueur():
                         "creerarmures": self.creer_armures,
                         "creeroutils": self.creer_outils,
                         "volerrune": self.volerrune,
-                        "attaquerennemis": self.attaquer_ennemis
+                        "attaquerennemis": self.attaquer_ennemis,
+                        "upgrade": self.upgrade
                         }
         # on va creer une maison comme centre pour le joueur
         self.creer_point_origine(x, y)
@@ -1076,7 +1077,7 @@ class Joueur():
 
     def creer_point_origine(self, x, y):
         idmaison = get_prochain_id()
-        self.batiments["maison"][idmaison] = Maison(self, idmaison, self.couleur, x, y, "maison")
+        self.batiments["maison"][idmaison] = MaisonLongue(self, idmaison, self.couleur, x, y, "maison")
         self.mamaison = self.batiments["maison"][idmaison]
 
     def construire_batiment(self, param):
@@ -1180,7 +1181,8 @@ class Joueur():
 
         print(choixOutil)
 
-    def upgrade(self, upgradetype):
+    def upgrade(self, param):
+        upgradetype = param[0]
         clemaison = self.batiments["maison"].keys()
         cle = list(clemaison)[0]
         maison = self.batiments["maison"][cle]
@@ -1294,7 +1296,7 @@ class Partie():
 
         self.joueurs = {}
         ###  reference vers les classes appropriées
-        self.classesbatiments = {"maison": Maison,
+        self.classesbatiments = {"maison": MaisonLongue,
                                  "caserne": Caserne,
                                  "forge": Forge,
                                  "fournaise": Fournaise,
