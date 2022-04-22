@@ -309,39 +309,6 @@ class Bouleau(Biotope):
         self.valeur = 15.0
 
 
-class Fleche:
-    def __init__(self, parent, id, proie):
-        self.parent = parent
-        self.id = id
-        self.vitesse = 18
-        self.taille = 20
-        self.force = 10
-        self.proie = proie
-        self.proiex = self.proie.x
-        self.proiey = self.proie.y
-        self.x = self.parent.x
-        self.y = self.parent.y
-        self.ang = Helper.calcAngle(self.x, self.y, self.proiex, self.proiey)
-        angquad = math.degrees(self.ang)
-        dir = "DB"
-        if 0 <= angquad <= 89:
-            dir = "DB"
-        elif -90 <= angquad <= -1:
-            dir = "DH"
-        if 90 <= angquad <= 179:
-            dir = "GB"
-        elif -180 <= angquad <= -91:
-            dir = "GH"
-        self.image = "javelot" + dir
-
-    def bouger(self):
-        self.x, self.y, = Helper.getAngledPoint(self.ang, self.vitesse, self.x, self.y)
-        dist = Helper.calcDistance(self.x, self.y, self.proie.x, self.proie.y)
-        if dist <= self.taille:
-            rep = self.cibleennemi.recevoircoup(self.force)
-            return self
-
-
 class Javelot:
     def __init__(self, parent, id, proie):
         self.parent = parent
@@ -564,6 +531,11 @@ class Guerrier(Perso):
         Perso.__init__(self, parent, id, maison, couleur, x, y, montype)
         self.force = 20
         self.etat = "vivant"
+        self.valeur = 30
+
+    def mourir(self):
+        self.etat = "mort"
+        self.position_visee = None
 
 
 class Archer(Perso):
@@ -623,13 +595,15 @@ class Archer(Perso):
 
     def attaque_En_Cours(self):
         if self.delailoop == 25:
-            self.cible.valeur -= self.force
-        print("valeur: ", self.cible.valeur)
-        if self.cible.valeur > 0 :
+
+            if self.cible.valeur > 0:
+                self.cible.valeur -= self.force
+                print("valeur: ", self.cible.valeur)
+        if self.cible.valeur <= 0 :
             self.actioncourante = None
             self.position_visee = [self.batimentmere.x, self.batimentmere.y]
             if self.cible.valeur <= 0:
-                self.parent.avertir_ennemis_mort(self.typeressource, self.cible)
+                self.parent.annoncer_mort(self.cible)
         else:
             if self.delaianim == 5:
                 self.y -= 5
@@ -675,12 +649,13 @@ class Ouvrier(Perso):
         Perso.__init__(self, parent, id, maison, couleur, x, y, montype)
         self.activite = None  # sedeplacer, cueillir, chasser, pecher, construire, reparer, attaquer, fuir, promener,explorer,chercher
         self.typeressource = None
-        self.quota = 20
+        self.quota = 20 + (2 * self.parent.outilsniveau)
         self.etat = "vivant"
         self.ramassage = 0
-        self.qteramassage = 1
+        self.qteramassage = 1 + self.parent.outilsniveau
         self.cibletemp = None
         self.dejavisite = []
+        self.valeur = 30
         self.champvision = 100
         self.champvisionmax = 400
         self.champchasse = 120
@@ -884,6 +859,10 @@ class Ouvrier(Perso):
                 self.actioncourante = "retourbatimentmere"
                 self.position_visee = [self.batimentmere.x, self.batimentmere.y]
 
+    def mourir(self):
+        self.etat = "mort"
+        self.position_visee = None
+
     ## PAS UTILISER POUR LE MOMENT
     def scanner_alentour(self):
         dicojoueurs = self.parent.parent.joueurs
@@ -996,7 +975,7 @@ class Joueur():
         self.outilsniveau = 0
         self.chaussureniveau = 0
         self.armesniveau = 0
-        self.arumureniveau = 0
+        self.armureniveau = 0
 
     def get_stats(self):
         total = 0
@@ -1073,6 +1052,13 @@ class Joueur():
         print(idAttaquer)
         print(idAttaquant)
 
+        if (typeAttaquer == "Ouvrier"):
+            typeAttaquer = "ouvrier"
+        if (typeAttaquer == "Archer"):
+            typeAttaquer = "archer"
+        if (typeAttaquer == "Guerrier"):
+            typeAttaquer = "guerrier"
+
         ennemi = self.parent.joueurs[nomJoueurAttaque].persos[typeAttaquer][idAttaquer]
         print(ennemi)
 
@@ -1131,6 +1117,7 @@ class Joueur():
         # for i in sitesmorts:
         #     self.batiments['siteconstruction'].pop(i.id)
 
+    #pas utilise for some reason
     def creer_perso(self, param):
         sorteperso, batimentsource, idbatiment, pos = param
         id = get_prochain_id()
@@ -1157,15 +1144,17 @@ class Joueur():
             self.mamaison.ressources["pierre"] -= 10
 
     def creer_perso(self, param):
-        sorteperso, batimentsource, idbatiment, pos = param
-        id = get_prochain_id()
-        batiment = self.batiments[batimentsource][idbatiment]
+        if(self.mamaison.ressources["nourriture"] >= 25):
+            sorteperso, batimentsource, idbatiment, pos = param
+            id = get_prochain_id()
+            batiment = self.batiments[batimentsource][idbatiment]
 
-        x = batiment.x + 100 + (random.randrange(50) - 15)
-        y = batiment.y + (random.randrange(50) - 15)
+            x = batiment.x + 100 + (random.randrange(50) - 15)
+            y = batiment.y + (random.randrange(50) - 15)
 
-        self.persos[sorteperso][id] = Joueur.classespersos[sorteperso](self, id, batiment, self.couleur, x, y,
+            self.persos[sorteperso][id] = Joueur.classespersos[sorteperso](self, id, batiment, self.couleur, x, y,
                                                                        sorteperso)
+            self.mamaison.ressources["nourriture"] -= 25
 
     def creer_armes(self, param):
         batimentsource, idbatiment, pos = param
@@ -1201,28 +1190,38 @@ class Joueur():
         maison = self.batiments["maison"][cle]
 
         if upgradetype == "Chaussure":
-            maison.ressources["metal"] -= 2 + (self.chaussureniveau * 2)
-            self.chaussureniveau += 1
+            if(self.chaussureniveau < 5):
+                maison.ressources["metal"] -= 2 + (self.chaussureniveau * 2)
+                self.chaussureniveau += 1
+                print("Chaussures upgraded")
         if upgradetype == "Armes":
-            maison.ressources["metal"] -= 2 + (self.armesniveau * 2)
-            self.armesniveau += 1
+            if(self.armesniveau < 8):
+                maison.ressources["metal"] -= 2 + (self.armesniveau * 2)
+                self.armesniveau += 1
+                print("Armes upgraded")
         if upgradetype == "Outils":
-            maison.ressources["metal"] -= 2 + (self.outilsniveau * 2)
-            self.outilsniveau += 1
+            if(self.outilsniveau < 8):
+                maison.ressources["metal"] -= 2 + (self.outilsniveau * 2)
+                self.outilsniveau += 1
+                print("Outils upgraded")
         if upgradetype == "Armures":
-            maison.ressources["metal"] -= 2 + (self.arumureniveau * 2)
-            self.outilsniveau += 1
+            if(self.armureniveau < 8):
+                maison.ressources["metal"] -= 2 + (self.armureniveau * 2)
+                self.outilsniveau += 1
+                print("Armures upgraded")
 
         for i in self.persos:
             for j in self.persos[i]:
                 p = self.persos[i][j]
                 p.vitesse = 5 + self.chaussureniveau
                 p.force += self.armesniveau
-                p.vie += (10 * self.arumureniveau)
+                p.vie += (10 * self.armureniveau)
 
                 if p.montype == "ouvrier":
-                    p.quota = 20 + (3 * self.outilsniveau)
-                    p.qteramassage = 1 + (2 * self.outilsniveau)
+                    p.quota = 20 + (2 * self.outilsniveau)
+                    p.qteramassage = 1 + (self.outilsniveau)
+
+        self.parent.parent.vue.update_upgrade_labels()
 
 
     def volerrune(self,mestags):
