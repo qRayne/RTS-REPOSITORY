@@ -26,7 +26,6 @@ class Vue():
         self.tailleminicarte = 200
         self.btnchat = None
         self.btnaide = None
-        self.btncraft = None
         self.craftingopen = False
         self.spawnwindowopen = False
         self.textchaussure = StringVar()
@@ -247,10 +246,8 @@ class Vue():
 
         self.btnchat = Button(self.cadrejeuinfo, text="Chat", command=self.action.chatter)
         self.btnaide = Button(self.cadrejeuinfo, text="Aide", command=self.action.aider)
-        self.btncraft = Button(self.cadrejeuinfo, text="Craft", command=self.action.crafter)
         self.btnaide.pack(side=RIGHT)
         self.btnchat.pack(side=RIGHT)
-        self.btncraft.pack(side=RIGHT)
 
         self.cadrejeuinfo.grid(row=0, column=0, sticky=E+W)
 
@@ -368,9 +365,9 @@ class Vue():
 
     ## cadre qui affiche le menu de crafting
     def creer_crafting(self):
-        self.cadresubcraft = Frame(self.canevas, height=300, width=300, bg="grey")
-        self.cadresubcraft.columnconfigure(1, minsize=100)
-        self.cadresubcraft.columnconfigure(3, minsize=100)
+        self.cadresubcraft = Frame(self.canevas, height=300, width=170, bg="brown")
+        self.cadresubcraft.columnconfigure(1, minsize=50)
+        self.cadresubcraft.columnconfigure(3, minsize=0)
         self.cadresubcraft.rowconfigure(1, minsize=20)
         self.cadresubcraft.rowconfigure(4, minsize=20)
         self.cadresubcraft.rowconfigure(7, minsize=20)
@@ -432,29 +429,39 @@ class Vue():
                         self.canevas.delete("crafting")
                         self.craftingopen = False
                     else:
-                        obj = self.modele.joueurs[self.parent.monnom].mamaison
-                        joueur = self.modele.joueurs[self.parent.monnom]
-                        self.textchaussure.set(str(obj.ressources["metal"]) + "/" + str(2 + (2* joueur.chaussureniveau)))
-                        self.textoutil.set(str(obj.ressources["metal"]) + "/" + str(2 + (2* joueur.outilsniveau)))
-                        self.textarmur.set(str(obj.ressources["metal"]) + "/" + str(2 + (2* joueur.arumureniveau)))
-                        self.textarme.set(str(obj.ressources["metal"]) + "/" + str(2 + (2* joueur.armesniveau)))
+                        self.update_upgrade_labels()
                         self.canevas.create_window(posx + 200, posy - 00, window=self.cadres["crafting"],
                                                    tags=("crafting",))
                         self.craftingopen = True
 
 
     def upgrade(self, upgradetype, player):
-        obj = self.modele.joueurs[self.parent.monnom].mamaison
         action = [self.monnom, "upgrade", [upgradetype]]
         self.parent.actionsrequises.append(action)
+
+        #self.modele.joueurs[player].upgrade(upgradetype)
+
+
+    def update_upgrade_labels(self):
+        obj = self.modele.joueurs[self.parent.monnom].mamaison
         joueur = self.modele.joueurs[self.parent.monnom]
 
-        self.modele.joueurs[player].upgrade(upgradetype)
-        self.textchaussure.set(str(obj.ressources["metal"]) + "/" + str(2 + (2 * joueur.chaussureniveau)))
-        self.textoutil.set(str(obj.ressources["metal"]) + "/" + str(2 + (2 * joueur.outilsniveau)))
-        self.textarmur.set(str(obj.ressources["metal"]) + "/" + str(2 + (2 * joueur.arumureniveau)))
-        self.textarme.set(str(obj.ressources["metal"]) + "/" + str(2 + (2 * joueur.armesniveau)))
-
+        if(joueur.chaussureniveau >= 5):
+            self.textchaussure.set("MAX")
+        else:
+            self.textchaussure.set(str(obj.ressources["metal"]) + "/" + str(2 + (2 * joueur.chaussureniveau)))
+        if(joueur.outilsniveau >= 8):
+            self.textoutil.set("MAX")
+        else:
+            self.textoutil.set(str(obj.ressources["metal"]) + "/" + str(2 + (2 * joueur.outilsniveau)))
+        if(joueur.armureniveau >= 8):
+            self.textarmur.set("MAX")
+        else:
+            self.textarmur.set(str(obj.ressources["metal"]) + "/" + str(2 + (2 * joueur.armureniveau)))
+        if(joueur.armesniveau >= 8):
+            self.textarme.set("MAX")
+        else:
+            self.textarme.set(str(obj.ressources["metal"]) + "/" + str(2 + (2 * joueur.armesniveau)))
 
     def creer_spawn_guerrier(self):
         self.cadrespawnguerrier = Frame(self.canevas, height = 25, width = 110, bg ="black")

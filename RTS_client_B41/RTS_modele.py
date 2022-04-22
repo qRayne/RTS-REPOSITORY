@@ -649,10 +649,10 @@ class Ouvrier(Perso):
         Perso.__init__(self, parent, id, maison, couleur, x, y, montype)
         self.activite = None  # sedeplacer, cueillir, chasser, pecher, construire, reparer, attaquer, fuir, promener,explorer,chercher
         self.typeressource = None
-        self.quota = 20
+        self.quota = 20 + (2 * self.parent.outilsniveau)
         self.etat = "vivant"
         self.ramassage = 0
-        self.qteramassage = 1
+        self.qteramassage = 1 + self.parent.outilsniveau
         self.cibletemp = None
         self.dejavisite = []
         self.valeur = 30
@@ -962,7 +962,7 @@ class Joueur():
         self.outilsniveau = 0
         self.chaussureniveau = 0
         self.armesniveau = 0
-        self.arumureniveau = 0
+        self.armureniveau = 0
 
     def get_stats(self):
         total = 0
@@ -1174,28 +1174,38 @@ class Joueur():
         maison = self.batiments["maison"][cle]
 
         if upgradetype == "Chaussure":
-            maison.ressources["metal"] -= 2 + (self.chaussureniveau * 2)
-            self.chaussureniveau += 1
+            if(self.chaussureniveau < 5):
+                maison.ressources["metal"] -= 2 + (self.chaussureniveau * 2)
+                self.chaussureniveau += 1
+                print("Chaussures upgraded")
         if upgradetype == "Armes":
-            maison.ressources["metal"] -= 2 + (self.armesniveau * 2)
-            self.armesniveau += 1
+            if(self.armesniveau < 8):
+                maison.ressources["metal"] -= 2 + (self.armesniveau * 2)
+                self.armesniveau += 1
+                print("Armes upgraded")
         if upgradetype == "Outils":
-            maison.ressources["metal"] -= 2 + (self.outilsniveau * 2)
-            self.outilsniveau += 1
+            if(self.outilsniveau < 8):
+                maison.ressources["metal"] -= 2 + (self.outilsniveau * 2)
+                self.outilsniveau += 1
+                print("Outils upgraded")
         if upgradetype == "Armures":
-            maison.ressources["metal"] -= 2 + (self.arumureniveau * 2)
-            self.outilsniveau += 1
+            if(self.armureniveau < 8):
+                maison.ressources["metal"] -= 2 + (self.armureniveau * 2)
+                self.outilsniveau += 1
+                print("Armures upgraded")
 
         for i in self.persos:
             for j in self.persos[i]:
                 p = self.persos[i][j]
                 p.vitesse = 5 + self.chaussureniveau
                 p.force += self.armesniveau
-                p.vie += (10 * self.arumureniveau)
+                p.vie += (10 * self.armureniveau)
 
                 if p.montype == "ouvrier":
-                    p.quota = 20 + (3 * self.outilsniveau)
-                    p.qteramassage = 1 + (2 * self.outilsniveau)
+                    p.quota = 20 + (2 * self.outilsniveau)
+                    p.qteramassage = 1 + (self.outilsniveau)
+
+        self.parent.parent.vue.update_upgrade_labels()
 
 
     def volerrune(self,mestags):
