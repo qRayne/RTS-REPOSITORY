@@ -682,7 +682,7 @@ class Ouvrier(Perso):
         self.cibletemp = None
         self.dejavisite = []
         self.champvision = 100
-        self.champvisionmax = 800
+        self.champvisionmax = 400
         self.champchasse = 120
         self.delailoop = 25
         self.delaianim = self.delailoop / 5
@@ -831,22 +831,35 @@ class Ouvrier(Perso):
 
     def chercher_nouvelle_ressource(self, type, idreg):
         print("Je cherche nouvelle ressource")
-        nb = len(self.parent.parent.biotopes[type])
+        ressources = {}
+        if type == "hetre" or type == "bouleau" or type == "pin" or type == "sapin":
+            restype = {"hetre", "bouleau", "pin", "sapin"}
+            for j in restype:
+                arbres = self.parent.parent.biotopes[j]
+                ressources.update(arbres)
+        elif type == "bleuets" or type == "framboises" or type == "champignons":
+            restype = {"bleuets", "framboises", "champignons"}
+            for j in restype:
+                bouffe = self.parent.parent.biotopes[j]
+                ressources.update(bouffe)
+        else:
+            ressources = self.parent.parent.biotopes[type]
+        nb = len(ressources)
         vision = self.champvision
         chercheressource = True
         while chercheressource:
             for i in range(nb):
-                rep = random.choice(list(self.parent.parent.biotopes[type].keys()))
-                obj = self.parent.parent.biotopes[type][rep]
+                rep = random.choice(list(ressources.keys()))
+                obj = ressources[rep]
                 if obj != self.cible:
                     distance = Helper.calcDistance(self.x, self.y, obj.x, obj.y)
                     if distance <= vision:
-                        chercheressource = False
                         return obj
+
             # si l'ouvrier ne trouve pas de la même ressource dans son champs de vision, il l'aggrandi jusqu'à un max.
             # Ca fait en sorte qu'il prendra les ressources plus près de lui en premier, règle générale.
             if chercheressource and vision < self.champvisionmax:
-                vision += 50
+                vision += 25
             else:
                 chercheressource = False
         print("Je n'ai pas trouvé de nouvelles ressources près de ma maison")
