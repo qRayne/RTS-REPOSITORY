@@ -529,9 +529,36 @@ class Perso():
 class Guerrier(Perso):
     def __init__(self, parent, id, maison, couleur, x, y, montype):
         Perso.__init__(self, parent, id, maison, couleur, x, y, montype)
-        self.force = 20
+        self.dir = "D"
+        self.image = couleur[0] + "_" + montype + self.dir
+        self.cible = None
+        self.angle = None
         self.etat = "vivant"
+        self.distancefeumax = 50
+        self.typeressource = None
+        self.distancefeu = 50
+        self.delaifeu = 0
+        self.delaifeumax = 30
         self.valeur = 30
+        self.champchasse = 120
+        self.delailoop = 25
+        self.quota = 20
+        self.delaianim = self.delailoop / 5
+        self.ramassage = 0
+        self.force = 6
+        self.javelots = []
+        self.fleches = []
+        self.cibleennemi = None
+        self.etats_et_actions = {"ciblerproie": self.cibler_ennemis,
+                                 "bouger": self.bouger,
+                                 "modeAttaque": self.mode_Attaque,
+                                 "attaqueEnCours": self.attaque_En_Cours,
+                                 "retourbatimentmere": self.retour_batiment_mere,
+                                 "ciblerressource": self.cibler_ressource
+                                 }
+
+
+
 
     def mourir(self):
         self.etat = "mort"
@@ -1041,9 +1068,9 @@ class Joueur():
 
         if (typeAttaquer == "Ouvrier"):
             typeAttaquer = "ouvrier"
-        if (typeAttaquer == "Archer"):
+        elif (typeAttaquer == "Archer"):
             typeAttaquer = "archer"
-        if (typeAttaquer == "Guerrier"):
+        elif (typeAttaquer == "Guerrier"):
             typeAttaquer = "guerrier"
 
         ennemi = self.parent.joueurs[nomJoueurAttaque].persos[typeAttaquer][idAttaquer]
