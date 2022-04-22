@@ -1190,15 +1190,19 @@ class Joueur():
         if upgradetype == "Chaussure":
             maison.ressources["metal"] -= 2 + (self.chaussureniveau * 2)
             self.chaussureniveau += 1
+            print("Chaussures upgraded")
         if upgradetype == "Armes":
             maison.ressources["metal"] -= 2 + (self.armesniveau * 2)
             self.armesniveau += 1
+            print("Armes upgraded")
         if upgradetype == "Outils":
             maison.ressources["metal"] -= 2 + (self.outilsniveau * 2)
             self.outilsniveau += 1
+            print("Outils upgraded")
         if upgradetype == "Armures":
             maison.ressources["metal"] -= 2 + (self.arumureniveau * 2)
             self.outilsniveau += 1
+            print("Armures upgraded")
 
         for i in self.persos:
             for j in self.persos[i]:
@@ -1210,6 +1214,8 @@ class Joueur():
                 if p.montype == "ouvrier":
                     p.quota = 20 + (3 * self.outilsniveau)
                     p.qteramassage = 1 + (2 * self.outilsniveau)
+
+        self.parent.parent.vue.update_upgrade_labels()
 
 
     def volerrune(self,mestags):

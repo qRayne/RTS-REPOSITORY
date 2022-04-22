@@ -26,7 +26,6 @@ class Vue():
         self.tailleminicarte = 200
         self.btnchat = None
         self.btnaide = None
-        self.btncraft = None
         self.craftingopen = False
         self.spawnwindowopen = False
         self.textchaussure = StringVar()
@@ -247,10 +246,8 @@ class Vue():
 
         self.btnchat = Button(self.cadrejeuinfo, text="Chat", command=self.action.chatter)
         self.btnaide = Button(self.cadrejeuinfo, text="Aide", command=self.action.aider)
-        self.btncraft = Button(self.cadrejeuinfo, text="Craft", command=self.action.crafter)
         self.btnaide.pack(side=RIGHT)
         self.btnchat.pack(side=RIGHT)
-        self.btncraft.pack(side=RIGHT)
 
         self.cadrejeuinfo.grid(row=0, column=0, sticky=E+W)
 
@@ -444,17 +441,20 @@ class Vue():
 
 
     def upgrade(self, upgradetype, player):
-        obj = self.modele.joueurs[self.parent.monnom].mamaison
         action = [self.monnom, "upgrade", [upgradetype]]
         self.parent.actionsrequises.append(action)
+
+        #self.modele.joueurs[player].upgrade(upgradetype)
+
+
+    def update_upgrade_labels(self):
+        obj = self.modele.joueurs[self.parent.monnom].mamaison
         joueur = self.modele.joueurs[self.parent.monnom]
 
-        self.modele.joueurs[player].upgrade(upgradetype)
         self.textchaussure.set(str(obj.ressources["metal"]) + "/" + str(2 + (2 * joueur.chaussureniveau)))
         self.textoutil.set(str(obj.ressources["metal"]) + "/" + str(2 + (2 * joueur.outilsniveau)))
         self.textarmur.set(str(obj.ressources["metal"]) + "/" + str(2 + (2 * joueur.arumureniveau)))
         self.textarme.set(str(obj.ressources["metal"]) + "/" + str(2 + (2 * joueur.armesniveau)))
-
 
     def creer_spawn_guerrier(self):
         self.cadrespawnguerrier = Frame(self.canevas, height = 25, width = 110, bg ="black")
