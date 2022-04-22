@@ -1118,6 +1118,7 @@ class Joueur():
         # for i in sitesmorts:
         #     self.batiments['siteconstruction'].pop(i.id)
 
+    #pas utilise for some reason
     def creer_perso(self, param):
         sorteperso, batimentsource, idbatiment, pos = param
         id = get_prochain_id()
@@ -1144,15 +1145,17 @@ class Joueur():
             self.mamaison.ressources["pierre"] -= 10
 
     def creer_perso(self, param):
-        sorteperso, batimentsource, idbatiment, pos = param
-        id = get_prochain_id()
-        batiment = self.batiments[batimentsource][idbatiment]
+        if(self.mamaison.ressources["nourriture"] >= 25):
+            sorteperso, batimentsource, idbatiment, pos = param
+            id = get_prochain_id()
+            batiment = self.batiments[batimentsource][idbatiment]
 
-        x = batiment.x + 100 + (random.randrange(50) - 15)
-        y = batiment.y + (random.randrange(50) - 15)
+            x = batiment.x + 100 + (random.randrange(50) - 15)
+            y = batiment.y + (random.randrange(50) - 15)
 
-        self.persos[sorteperso][id] = Joueur.classespersos[sorteperso](self, id, batiment, self.couleur, x, y,
+            self.persos[sorteperso][id] = Joueur.classespersos[sorteperso](self, id, batiment, self.couleur, x, y,
                                                                        sorteperso)
+            self.mamaison.ressources["nourriture"] -= 25
 
     def creer_armes(self, param):
         batimentsource, idbatiment, pos = param
