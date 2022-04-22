@@ -309,39 +309,6 @@ class Bouleau(Biotope):
         self.valeur = 15.0
 
 
-class Fleche:
-    def __init__(self, parent, id, proie):
-        self.parent = parent
-        self.id = id
-        self.vitesse = 18
-        self.taille = 20
-        self.force = 10
-        self.proie = proie
-        self.proiex = self.proie.x
-        self.proiey = self.proie.y
-        self.x = self.parent.x
-        self.y = self.parent.y
-        self.ang = Helper.calcAngle(self.x, self.y, self.proiex, self.proiey)
-        angquad = math.degrees(self.ang)
-        dir = "DB"
-        if 0 <= angquad <= 89:
-            dir = "DB"
-        elif -90 <= angquad <= -1:
-            dir = "DH"
-        if 90 <= angquad <= 179:
-            dir = "GB"
-        elif -180 <= angquad <= -91:
-            dir = "GH"
-        self.image = "javelot" + dir
-
-    def bouger(self):
-        self.x, self.y, = Helper.getAngledPoint(self.ang, self.vitesse, self.x, self.y)
-        dist = Helper.calcDistance(self.x, self.y, self.proie.x, self.proie.y)
-        if dist <= self.taille:
-            rep = self.cibleennemi.recevoircoup(self.force)
-            return self
-
-
 class Javelot:
     def __init__(self, parent, id, proie):
         self.parent = parent
@@ -564,6 +531,11 @@ class Guerrier(Perso):
         Perso.__init__(self, parent, id, maison, couleur, x, y, montype)
         self.force = 20
         self.etat = "vivant"
+        self.valeur = 30
+
+    def mourir(self):
+        self.etat = "mort"
+        self.position_visee = None
 
 
 class Archer(Perso):
@@ -623,13 +595,15 @@ class Archer(Perso):
 
     def attaque_En_Cours(self):
         if self.delailoop == 25:
-            self.cible.valeur -= self.force
-        print("valeur: ", self.cible.valeur)
-        if self.cible.valeur > 0 :
+
+            if self.cible.valeur > 0:
+                self.cible.valeur -= self.force
+                print("valeur: ", self.cible.valeur)
+        if self.cible.valeur <= 0 :
             self.actioncourante = None
             self.position_visee = [self.batimentmere.x, self.batimentmere.y]
             if self.cible.valeur <= 0:
-                self.parent.avertir_ennemis_mort(self.typeressource, self.cible)
+                self.parent.annoncer_mort(self.cible)
         else:
             if self.delaianim == 5:
                 self.y -= 5
@@ -681,6 +655,7 @@ class Ouvrier(Perso):
         self.qteramassage = 1
         self.cibletemp = None
         self.dejavisite = []
+        self.valeur = 30
         self.champvision = 100
         self.champvisionmax = 800
         self.champchasse = 120
@@ -871,6 +846,10 @@ class Ouvrier(Perso):
                 self.actioncourante = "retourbatimentmere"
                 self.position_visee = [self.batimentmere.x, self.batimentmere.y]
 
+    def mourir(self):
+        self.etat = "mort"
+        self.position_visee = None
+
     ## PAS UTILISER POUR LE MOMENT
     def scanner_alentour(self):
         dicojoueurs = self.parent.parent.joueurs
@@ -1059,6 +1038,13 @@ class Joueur():
         print(typeAttaquer)
         print(idAttaquer)
         print(idAttaquant)
+
+        if (typeAttaquer == "Ouvrier"):
+            typeAttaquer = "ouvrier"
+        if (typeAttaquer == "Archer"):
+            typeAttaquer = "archer"
+        if (typeAttaquer == "Guerrier"):
+            typeAttaquer = "guerrier"
 
         ennemi = self.parent.joueurs[nomJoueurAttaque].persos[typeAttaquer][idAttaquer]
         print(ennemi)
