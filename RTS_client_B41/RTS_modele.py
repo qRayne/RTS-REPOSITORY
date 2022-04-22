@@ -540,7 +540,7 @@ class Guerrier(Perso):
         self.delaifeu = 0
         self.delaifeumax = 30
         self.valeur = 30
-        self.champchasse = 120
+        self.champchasse = 20
         self.delailoop = 25
         self.quota = 20
         self.delaianim = self.delailoop / 5
@@ -557,12 +557,77 @@ class Guerrier(Perso):
                                  "ciblerressource": self.cibler_ressource
                                  }
 
+    def chasser_ennemis(self, ennemis, actiontype):
+        self.cible = ennemis
+        self.position_visee = [self.cible.x, self.cible.y]
+        self.actioncourante = actiontype
 
+    def cibler_ennemis(self):
+        self.position_visee = [self.cible.x, self.cible.y]
+        reponse = self.bouger()
+        if reponse == "rendu":
+            self.actioncourante = "attaqueEnCours"
+        elif reponse <= self.champchasse and self.cible.etat == "vivant":
+            self.actioncourante = "modeAttaque"
+            print("mode attaque")
 
+    def mode_Attaque(self):
+        self.lancer_fleches(self.cible)
+        for i in self.fleches:
+            i.bouger()
+
+    def lancer_fleches(self, proie):
+        if self.fleches == []:
+            id = get_prochain_id()
+            self.fleches.append(Fleche(self, id, proie))
+
+    def attaque_En_Cours(self):
+        if self.delailoop == 25:
+            if self.cible.valeur > 0:
+                self.cible.valeur -= self.force
+        if self.cible.valeur <= 0:
+            self.actioncourante = None
+            self.position_visee = [self.batimentmere.x, self.batimentmere.y]
+            if self.cible.valeur <= 0:
+                self.parent.annoncer_mort(self.cible)
+        else:
+            if self.delaianim == 5:
+                self.y -= 5
+            elif self.delaianim == 1:
+                self.y += 5
+            if self.delaianim > 0:
+                self.delaianim -= 1
+        self.delailoop -= 1
+        if self.delailoop == 0:
+            self.delailoop = 25
+            self.delaianim = self.delailoop / 5
+
+    def cibler_ressource(self):
+        reponse = self.bouger()
+        if reponse == "rendu":
+            self.actioncourante = "attaqueEnCours"
+
+    def retour_batiment_mere(self):
+        reponse = self.bouger()
+        if reponse == "rendu":
+            if self.cible:
+                pass
+            else:
+                self.actioncourante = None
+        else:
+            pass
 
     def mourir(self):
         self.etat = "mort"
         self.position_visee = None
+
+    def abandonner_ressource(self, ressource):
+        if ressource == self.cible:
+            if self.actioncourante == "ciblerressource" or self.actioncourante == "retourbatimentmere" or self.actioncourante == "ramasserresource":
+                self.actioncourante = "retourbatimentmere"
+            else:
+                self.actioncourante = "retourbatimentmere"
+                self.position_visee = [self.batimentmere.x, self.batimentmere.y]
 
 
 class Archer(Perso):
@@ -622,10 +687,8 @@ class Archer(Perso):
 
     def attaque_En_Cours(self):
         if self.delailoop == 25:
-
             if self.cible.valeur > 0:
                 self.cible.valeur -= self.force
-                print("valeur: ", self.cible.valeur)
         if self.cible.valeur <= 0 :
             self.actioncourante = None
             self.position_visee = [self.batimentmere.x, self.batimentmere.y]
