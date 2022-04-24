@@ -72,12 +72,14 @@ class Forge(Batiment):
                                  "bois": 30,
                                  "pierre": 10}
 
+
 class Ferme(Batiment):
-    def __init__(self,parent,id,couleur,x,y,montype):
-        Batiment.__init__(self,parent,id,x,y)
+    def __init__(self, parent, id, couleur, x, y, montype):
+        Batiment.__init__(self, parent, id, x, y)
         self.image = couleur[0] + "_" + montype
         self.montype = montype
         self.valeur = 5
+
 
 class Fournaise(Batiment):
     def __init__(self, parent, id, couleur, x, y, montype):
@@ -111,10 +113,11 @@ class NPC:
         self.currentQuest = currentQuest
         self.questInProgress = False
 
+
 class Stele:
-    def __init__(self,parent,joueur,id,rune,x,y):
+    def __init__(self, parent, joueur, id, rune, x, y):
         self.parent = parent
-        self.joueur = joueur #ImageTk.PhotoImage(Image.open("image"))'stele0' # à changer
+        self.joueur = joueur  # ImageTk.PhotoImage(Image.open("image"))'stele0' # à changer
         self.rune = rune
         self.id = id
         self.tempsA = int(time.time())
@@ -126,7 +129,7 @@ class Stele:
         if self.rune >= 1:
             self.joueur.nbPointsRune += 20
 
-    def incrementerRune(self,steleEnnemie):
+    def incrementerRune(self, steleEnnemie):
         if self.rune < 4:
             if steleEnnemie.rune >= 1:
                 self.rune += 1
@@ -348,6 +351,7 @@ class Javelot:
             if dist < self.vitesse:
                 self.parent.javelots.remove(self)
                 self.parent.actioncourante = "ciblerproie"
+
 
 class Fleche:
     def __init__(self, parent, id, proie):
@@ -689,7 +693,7 @@ class Archer(Perso):
         if self.delailoop == 25:
             if self.cible.valeur > 0:
                 self.cible.valeur -= self.force
-        if self.cible.valeur <= 0 :
+        if self.cible.valeur <= 0:
             self.actioncourante = None
             self.position_visee = [self.batimentmere.x, self.batimentmere.y]
             if self.cible.valeur <= 0:
@@ -996,7 +1000,7 @@ class Caseregion():
         self.ressources = {}
         self.x = x
         self.y = y
-        self.montype = self.definirtyperegion(x,y)
+        self.montype = self.definirtyperegion(x, y)
 
     def definirtyperegion(self, x, y):
         if ((0 <= x < 20) or (60 < x <= 80)) and ((0 <= y < 20) or (60 < y <= 80)):
@@ -1006,12 +1010,13 @@ class Caseregion():
         else:
             return "foretnoire"
 
+
 class Joueur():
     classespersos = {"ouvrier": Ouvrier,
                      "soldat": Guerrier,
                      "archer": Archer, }
 
-    def __init__(self, parent, id, nom, couleur, x, y,nbPointsRune):
+    def __init__(self, parent, id, nom, couleur, x, y, nbPointsRune):
         self.parent = parent
         self.nom = nom
         self.id = id
@@ -1038,7 +1043,7 @@ class Joueur():
                           "siteconstruction": {},
                           "forge": {},
                           "fournaise": {},
-                          "ferme":{}}
+                          "ferme": {}}
 
         self.actions = {"creerperso": self.creer_perso,
                         "deplacer": self.deplacer,
@@ -1129,7 +1134,7 @@ class Joueur():
                                                                typeress, "ciblerressource")
                         else:
                             self.persos[j][i].chasser_ramasser(self.parent.biotopes[typeress][idress],
-                                                           typeress, "ciblerressource")
+                                                               typeress, "ciblerressource")
 
     def attaquer_ennemis(self, param):
         nomJoueurAttaque = param[0]
@@ -1175,7 +1180,7 @@ class Joueur():
         # payer batiment
         vals = Partie.valeurs
         for k, val in self.mamaison.ressources.items():
-            if (self.mamaison.ressources[k] > 0 ):
+            if (self.mamaison.ressources[k] > 0):
                 ok = True
                 self.mamaison.ressources[k] = val - vals[sorte][k]
             else:
@@ -1207,7 +1212,7 @@ class Joueur():
         # for i in sitesmorts:
         #     self.batiments['siteconstruction'].pop(i.id)
 
-    #pas utilise for some reason
+    # pas utilise for some reason
     def creer_perso(self, param):
         sorteperso, batimentsource, idbatiment, pos = param
         id = get_prochain_id()
@@ -1234,7 +1239,7 @@ class Joueur():
             self.mamaison.ressources["pierre"] -= 10
 
     def creer_perso(self, param):
-        if(self.mamaison.ressources["nourriture"] >= 25):
+        if (self.mamaison.ressources["nourriture"] >= 25):
             sorteperso, batimentsource, idbatiment, pos = param
             id = get_prochain_id()
             batiment = self.batiments[batimentsource][idbatiment]
@@ -1243,7 +1248,7 @@ class Joueur():
             y = batiment.y + (random.randrange(50) - 15)
 
             self.persos[sorteperso][id] = Joueur.classespersos[sorteperso](self, id, batiment, self.couleur, x, y,
-                                                                       sorteperso)
+                                                                           sorteperso)
             self.mamaison.ressources["nourriture"] -= 25
 
     def creer_armes(self, param):
@@ -1280,22 +1285,22 @@ class Joueur():
         maison = self.batiments["maison"][cle]
 
         if upgradetype == "Chaussure":
-            if(self.chaussureniveau < 5):
+            if (self.chaussureniveau < 5):
                 maison.ressources["metal"] -= 2 + (self.chaussureniveau * 2)
                 self.chaussureniveau += 1
                 print("Chaussures upgraded")
         if upgradetype == "Armes":
-            if(self.armesniveau < 8):
+            if (self.armesniveau < 8):
                 maison.ressources["metal"] -= 2 + (self.armesniveau * 2)
                 self.armesniveau += 1
                 print("Armes upgraded")
         if upgradetype == "Outils":
-            if(self.outilsniveau < 8):
+            if (self.outilsniveau < 8):
                 maison.ressources["metal"] -= 2 + (self.outilsniveau * 2)
                 self.outilsniveau += 1
                 print("Outils upgraded")
         if upgradetype == "Armures":
-            if(self.armureniveau < 8):
+            if (self.armureniveau < 8):
                 maison.ressources["metal"] -= 2 + (self.armureniveau * 2)
                 self.outilsniveau += 1
                 print("Armures upgraded")
@@ -1313,27 +1318,18 @@ class Joueur():
 
         self.parent.parent.vue.update_upgrade_labels()
 
-
-    def volerrune(self,mestags):
+    def volerrune(self, mestags):
         steleAttaquer = mestags[2]
+        objetStele = None
 
-        if self.stele.id == steleAttaquer:
-            print("même stèle")
-        else:
+        if self.stele.id != steleAttaquer:
             print("stèle ennemie qui va être attaquer ")
             for stele in self.parent.listeStele:
                 if steleAttaquer == stele.id:
                     objetStele = stele
-            for i in self.persos['soldat']:
-                idSoldat = 0
-                if i == mestags[3][idSoldat]:
-                    soldat = self.persos['soldat'][i]
-                    print("soldat en mouvement")
-                    soldat.x = objetStele.x
-                    soldat.y = objetStele.y
-                idSoldat += 1
-
-            self.stele.incrementerRune(objetStele)
+                    self.stele.incrementerRune(objetStele)
+        else:
+            print("impossible d'attaquer sa propre stèle")
 
 
 #######################  LE MODELE est la partie #######################
@@ -1341,8 +1337,6 @@ class Partie():
 
     def cout(self, ressouces):
         nbressource = self.mamaison.ressources
-
-
 
     valeurs = {"maison": {"nourriture": 0,
                           "bois": 50,
@@ -1368,12 +1362,12 @@ class Partie():
                              "metal": 0,
                              "delai": 10
                              },
-               "ferme":        {"nourriture": 0,
-                             "bois": 50,
-                             "pierre": 25,
-                             "metal": 0,
-                             "delai": 10
-                             }
+               "ferme": {"nourriture": 0,
+                         "bois": 50,
+                         "pierre": 25,
+                         "metal": 0,
+                         "delai": 10
+                         }
                }
 
     def __init__(self, parent, mondict):
@@ -1402,7 +1396,7 @@ class Partie():
                                  "caserne": Caserne,
                                  "forge": Forge,
                                  "fournaise": Fournaise,
-                                 "ferme":Ferme}
+                                 "ferme": Ferme}
         self.classespersos = {"ouvrier": Ouvrier,
                               "soldat": Guerrier,
                               "archer": Archer}
@@ -1444,7 +1438,6 @@ class Partie():
         for i in self.biotopes:
             total += len(self.biotopes[i])
         self.montrer_msg_general(str(total))
-
 
     def trouver_valeurs(self):
         vals = Partie.valeurs
@@ -1616,12 +1609,10 @@ class Partie():
             runePoints = 0
             x = quadrants[j][b]
             y = quadrants[j][b + 1]
-            self.joueurs[i] = Joueur(self, id, i, coul, x, y,runePoints)
+            self.joueurs[i] = Joueur(self, id, i, coul, x, y, runePoints)
             id = get_prochain_id()
-            self.joueurs[i].stele = Stele(self,self.joueurs[i],id,rune,x+100,y+100)
+            self.joueurs[i].stele = Stele(self, self.joueurs[i], id, rune, x + 100, y + 100)
             self.listeStele.append(self.joueurs[i].stele)
-
-
 
     def deplacer(self):
         for i in self.joueurs:
@@ -1675,7 +1666,7 @@ class Partie():
         y = random.randrange(self.aireY)
         case = self.trouver_case(x, y)
 
-            #Si la case est de type "prairie", la boucle while se répète sans incrémenter
+        # Si la case est de type "prairie", la boucle while se répète sans incrémenter
         if case.montype == "plaine":
             if random.randrange(2) < 1:
                 ressource = Champignons
