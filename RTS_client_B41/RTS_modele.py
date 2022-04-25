@@ -123,7 +123,8 @@ class Stele:
         self.tempsA = int(time.time())
         self.x = x
         self.y = y
-        self.imageSteleDebut = self.parent.parent.vue.images["stele1"]
+        self.imageStele = self.parent.parent.vue.images["stele1"]
+        self.imageSteleNumber = 1
 
     def incrementerPoints(self):
         if self.rune >= 1:
@@ -1321,15 +1322,24 @@ class Joueur():
 
     def volerrune(self, mestags):
         steleAttaquer = mestags[2]
+        steleid = 1
 
         if self.stele.id != steleAttaquer:
             print("stèle ennemie qui va être attaquer ")
             for stele in self.parent.listeStele:
                 if steleAttaquer == stele.id:
                     self.steleAttaquer = stele
+                    steleid = stele.id
+                    stele.imageSteleNumber -= 1
+                    self.parent.parent.vue.update_stele_image(steleid, "Enleve", stele.imageSteleNumber)
+
         elif self.stele.id == steleAttaquer and self.steleAttaquer is not None:
             self.stele.incrementerRune(self.steleAttaquer)
+            steleid = self.stele.id
+            self.stele.imageSteleNumber += 1
+            self.parent.parent.vue.update_stele_image(steleid, "Ajoute", self.stele.imageSteleNumber)
             self.steleAttaquer = None # la rune est voler : revenir à l'état de départ
+
         else:
             print("impossible d'attaquer sa propre stèle")
 
