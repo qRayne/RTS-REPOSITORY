@@ -1023,6 +1023,7 @@ class Joueur():
         self.x = x
         self.y = y
         self.nbPointsRune = nbPointsRune
+        self.steleAttaquer = None # variable qui enregistre la stèle attaquer = sert à la suite
         self.couleur = couleur
         self.monchat = []
         self.stele = None
@@ -1320,14 +1321,15 @@ class Joueur():
 
     def volerrune(self, mestags):
         steleAttaquer = mestags[2]
-        objetStele = None
 
         if self.stele.id != steleAttaquer:
             print("stèle ennemie qui va être attaquer ")
             for stele in self.parent.listeStele:
                 if steleAttaquer == stele.id:
-                    objetStele = stele
-                    self.stele.incrementerRune(objetStele)
+                    self.steleAttaquer = stele
+        elif self.stele.id == steleAttaquer and self.steleAttaquer is not None:
+            self.stele.incrementerRune(self.steleAttaquer)
+            self.steleAttaquer = None # la rune est voler : revenir à l'état de départ
         else:
             print("impossible d'attaquer sa propre stèle")
 
