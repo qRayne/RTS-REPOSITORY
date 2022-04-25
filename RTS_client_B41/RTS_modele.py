@@ -135,6 +135,10 @@ class Stele:
                 self.rune += 1
                 steleEnnemie.rune -= 1
 
+    def retournerRune(self,steleEnnemie):
+        self.rune -= 1
+        steleEnnemie += 1
+
     def decrementerRune(self):
         if self.rune > 0:
             self.rune -= 1
@@ -1328,12 +1332,13 @@ class Joueur():
                 if steleAttaquer == stele.id:
                     self.steleAttaquer = stele
         elif self.stele.id == steleAttaquer and self.steleAttaquer is not None:
-            self.stele.incrementerRune(self.steleAttaquer)
-            self.steleAttaquer = None # la rune est voler : revenir à l'état de départ
+            if self.persos['soldat'][mestags[3][0]].etat == "vivant": # le soldat reste vivant durant la traverser
+                self.stele.incrementerRune(self.steleAttaquer)
+                self.steleAttaquer = None # la rune est voler : revenir à l'état de départ
+            else:
+                self.stele.retournerRune(steleAttaquer) # cela veut dire que le soldat est mort durant la traverser
         else:
             print("impossible d'attaquer sa propre stèle")
-
-
 #######################  LE MODELE est la partie #######################
 class Partie():
 
