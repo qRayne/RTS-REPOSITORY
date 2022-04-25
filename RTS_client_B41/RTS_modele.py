@@ -115,7 +115,7 @@ class NPC:
 
 
 class Stele:
-    def __init__(self, parent, joueur, id, rune, x, y):
+    def __init__(self, parent, joueur, id, rune, x, y, steleLevel):
         self.parent = parent
         self.joueur = joueur  # ImageTk.PhotoImage(Image.open("image"))'stele0' # à changer
         self.rune = rune
@@ -123,8 +123,10 @@ class Stele:
         self.tempsA = int(time.time())
         self.x = x
         self.y = y
-        self.imageStele = self.parent.parent.vue.images["stele1"]
-        self.imageSteleNumber = 1
+        self.imageSteleNumber = steleLevel
+        self.steleLevelString = "stele" + str(self.imageSteleNumber)
+        self.imageStele = self.parent.parent.vue.images[self.steleLevelString]
+
 
     def incrementerPoints(self):
         if self.rune >= 1:
@@ -1329,12 +1331,14 @@ class Joueur():
                 if steleAttaquer == stele.id:
                     self.steleAttaquer = stele
                     steleid = stele.id
-                    stele.imageSteleNumber -= 1
+                    if stele.imageSteleNumber >= 0:
+                        stele.imageSteleNumber -= 1
                     self.parent.parent.vue.update_stele_image(steleid, "Enleve", stele.imageSteleNumber)
 
         elif self.stele.id == steleAttaquer and self.steleAttaquer is not None:
             self.stele.incrementerRune(self.steleAttaquer)
-            self.stele.imageSteleNumber += 1
+            if self.stele.imageSteleNumber <= 4:
+                self.stele.imageSteleNumber += 1
             self.parent.parent.vue.update_stele_image(self.stele.id, "Ajoute", self.stele.imageSteleNumber)
             self.steleAttaquer = None # la rune est voler : revenir à l'état de départ
         else:
@@ -1620,7 +1624,7 @@ class Partie():
             y = quadrants[j][b + 1]
             self.joueurs[i] = Joueur(self, id, i, coul, x, y, runePoints)
             id = get_prochain_id()
-            self.joueurs[i].stele = Stele(self, self.joueurs[i], id, rune, x + 100, y + 100)
+            self.joueurs[i].stele = Stele(self, self.joueurs[i], id, rune, x + 100, y + 100, 1)
             self.listeStele.append(self.joueurs[i].stele)
 
     def deplacer(self):
