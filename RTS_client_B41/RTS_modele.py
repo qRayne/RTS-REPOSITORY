@@ -354,19 +354,20 @@ class Javelot:
 
 
 class Fleche:
-    def __init__(self, parent, id, proie):
+    def __init__(self, parent, id, ennemi, force):
         self.parent = parent
         self.id = id
         self.vitesse = 18
+        self.force = force
         self.distance = 150
         self.taille = 20
         self.demitaille = 10
-        self.proie = proie
-        self.proiex = self.proie.x
-        self.proiey = self.proie.y
+        self.ennemi = ennemi
+        self.ennemix = self.ennemi.x
+        self.ennemiy = self.ennemi.y
         self.x = self.parent.x
         self.y = self.parent.y
-        self.ang = Helper.calcAngle(self.x, self.y, self.proiex, self.proiey)
+        self.ang = Helper.calcAngle(self.x, self.y, self.ennemix, self.ennemiy)
         angquad = math.degrees(self.ang)
         dir = "DB"
         if 0 <= angquad <= 89:
@@ -381,17 +382,17 @@ class Fleche:
 
     def bouger(self):
         self.x, self.y, = Helper.getAngledPoint(self.ang, self.vitesse, self.x, self.y)
-        dist = Helper.calcDistance(self.x, self.y, self.proie.x, self.proie.y)
+        dist = Helper.calcDistance(self.x, self.y, self.ennemi.x, self.ennemi.y)
         if dist <= self.demitaille:
-            # tue daim
-            self.parent.actioncourante = "ciblerressource"
             self.parent.fleches.remove(self)
-            self.proie.mourir()
+            self.ennemi.infligerdegats(self.force)
+            if self.ennemi.vie <= 0:
+                self.ennemi.mourir()
         else:
-            dist = Helper.calcDistance(self.x, self.y, self.proiex, self.proiey)
+            dist = Helper.calcDistance(self.x, self.y, self.ennemix, self.ennemiy)
             if dist < self.vitesse:
                 self.parent.fleches.remove(self)
-                self.parent.actioncourante = "ciblerproie"
+                self.parent.actioncourante = "ciblerennemi"
 
 
 class Perso():
@@ -410,6 +411,7 @@ class Perso():
         self.cibleennemi = None
         self.vie = 100
         self.force = 5
+        self.defense = 2
         self.champvision = 100
         self.vitesse = 5
         self.angle = None
@@ -467,7 +469,7 @@ class Perso():
             ######## FIN DE TEST POUR SURFACE MARCHEE
             # si tout ba bien on continue avec la nouvelle valeur
             self.x, self.y = x1, y1
-            # ici on test pour vori si nous rendu a la cible (en deca de la longueur de notre pas)
+            # ici on test pour voir si nous rendu a la cible (en deca de la longueur de notre pas)
             dist = Helper.calcDistance(self.x, self.y, x, y)
             if dist <= self.vitesse:
                 if self.actioncourante == "bouger":
@@ -491,6 +493,14 @@ class Perso():
 
             self.position_visee = None
 
+    def infligerdegats(self, forceennemi):
+        degats = forceennemi
+        if self.vie >= degats - self.defense:
+            self.vie -= degats - self.defense
+        else:
+            self.vie = 0
+
+
     def test_etat_du_sol(self, x1, y1):
         ######## SINON TROUVER VOIE DE CONTOURNEMENT
         # ici oncalcule sur quelle case on circule
@@ -504,12 +514,12 @@ class Perso():
         case = self.parent.parent.trouver_case(x1, y1)
         #
         # test si different de 0 (0=plaine), voir Partie pour attribution des valeurs
-        if case.montype != "plaine" or case.montype != "foretnoire" or case.montype != "prairie":
-            # test pour être sur que de n'est 9 (9=batiment)
-            if case.montype != "batiment":
-                print("marche dans ", case.montype)
-            else:
-                print("marche dans batiment")
+        # if case.montype != "plaine" or case.montype != "foretnoire" or case.montype != "prairie":
+        #     # test pour être sur que de n'est 9 (9=batiment)
+        #     if case.montype != "batiment":
+        #         print("marche dans ", case.montype)
+        #     else:
+        #         print("marche dans batiment")
 
     def test_etat_du_sol1(self, x1, y1):
         ######## SINON TROUVER VOIE DE CONTOURNEMENT
@@ -522,12 +532,12 @@ class Perso():
             casey = int(casey) + 1
         #####AJOUTER TEST DE LIMITE
         # test si different de 0 (0=plaine), voir Partie pour attribution des valeurs
-        if self.parent.parent.cartecase[int(casey)][int(casex)].montype != "plaine":
-            # test pour être sur que de n'est 9 (9=batiment)
-            if self.parent.parent.cartecase[int(casey)][int(casex)].montype != "batiment":
-                print("marche dans ", )
-            else:
-                print("marche dans batiment")
+        # if self.parent.parent.cartecase[int(casey)][int(casex)].montype != "plaine":
+        #     # test pour être sur que de n'est 9 (9=batiment)
+        #     if self.parent.parent.cartecase[int(casey)][int(casex)].montype != "batiment":
+        #         print("marche dans ", )
+        #     else:
+        #         print("marche dans batiment")
 
 
 class Guerrier(Perso):
@@ -543,20 +553,20 @@ class Guerrier(Perso):
         self.distancefeu = 50
         self.delaifeu = 0
         self.delaifeumax = 30
-        self.valeur = 30
+        self.vie = 50
+        self.force = 6
+        self.defense = 3
         self.champchasse = 20
         self.delailoop = 25
         self.quota = 20
         self.delaianim = self.delailoop / 5
         self.ramassage = 0
-        self.force = 6
         self.javelots = []
         self.fleches = []
         self.cibleennemi = None
-        self.etats_et_actions = {"ciblerproie": self.cibler_ennemis,
+        self.etats_et_actions = {"ciblerennemi": self.cibler_ennemis,
                                  "bouger": self.bouger,
                                  "modeAttaque": self.mode_Attaque,
-                                 "attaqueEnCours": self.attaque_En_Cours,
                                  "retourbatimentmere": self.retour_batiment_mere,
                                  "ciblerressource": self.cibler_ressource
                                  }
@@ -584,27 +594,6 @@ class Guerrier(Perso):
         if self.fleches == []:
             id = get_prochain_id()
             self.fleches.append(Fleche(self, id, proie))
-
-    def attaque_En_Cours(self):
-        if self.delailoop == 25:
-            if self.cible.valeur > 0:
-                self.cible.valeur -= self.force
-        if self.cible.valeur <= 0:
-            self.actioncourante = None
-            self.position_visee = [self.batimentmere.x, self.batimentmere.y]
-            if self.cible.valeur <= 0:
-                self.parent.annoncer_mort(self.cible)
-        else:
-            if self.delaianim == 5:
-                self.y -= 5
-            elif self.delaianim == 1:
-                self.y += 5
-            if self.delaianim > 0:
-                self.delaianim -= 1
-        self.delailoop -= 1
-        if self.delailoop == 0:
-            self.delailoop = 25
-            self.delaianim = self.delailoop / 5
 
     def cibler_ressource(self):
         reponse = self.bouger()
@@ -647,22 +636,20 @@ class Archer(Perso):
         self.distancefeu = 50
         self.delaifeu = 0
         self.delaifeumax = 30
-        self.valeur = 30
+        self.vie = 30
+        self.force = 10
+        self.defense = 1
         self.champchasse = 120
         self.delailoop = 25
         self.quota = 20
         self.delaianim = self.delailoop / 5
         self.ramassage = 0
-        self.force = 6
         self.javelots = []
         self.fleches = []
         self.cibleennemi = None
-        self.etats_et_actions = {"ciblerproie": self.cibler_ennemis,
+        self.etats_et_actions = {"ciblerennemi": self.cibler_ennemis,
                                  "bouger": self.bouger,
-                                 "modeAttaque": self.mode_Attaque,
-                                 "attaqueEnCours": self.attaque_En_Cours,
-                                 "retourbatimentmere": self.retour_batiment_mere,
-                                 "ciblerressource": self.cibler_ressource
+                                 "modeAttaque": self.mode_Attaque
                                  }
 
     def chasser_ennemis(self, ennemis, actiontype):
@@ -673,69 +660,23 @@ class Archer(Perso):
     def cibler_ennemis(self):
         self.position_visee = [self.cible.x, self.cible.y]
         reponse = self.bouger()
-        if reponse == "rendu":
-            self.actioncourante = "attaqueEnCours"
-        elif reponse <= self.champchasse and self.cible.etat == "vivant":
+        if reponse <= self.champchasse:
             self.actioncourante = "modeAttaque"
             print("mode attaque")
 
     def mode_Attaque(self):
-        self.lancer_fleches(self.cible)
+        self.lancer_fleches(self.cible, self.force)
         for i in self.fleches:
             i.bouger()
 
-    def lancer_fleches(self, proie):
+    def lancer_fleches(self, proie, force):
         if self.fleches == []:
             id = get_prochain_id()
-            self.fleches.append(Fleche(self, id, proie))
-
-    def attaque_En_Cours(self):
-        if self.delailoop == 25:
-            if self.cible.valeur > 0:
-                self.cible.valeur -= self.force
-        if self.cible.valeur <= 0:
-            self.actioncourante = None
-            self.position_visee = [self.batimentmere.x, self.batimentmere.y]
-            if self.cible.valeur <= 0:
-                self.parent.annoncer_mort(self.cible)
-        else:
-            if self.delaianim == 5:
-                self.y -= 5
-            elif self.delaianim == 1:
-                self.y += 5
-            if self.delaianim > 0:
-                self.delaianim -= 1
-        self.delailoop -= 1
-        if self.delailoop == 0:
-            self.delailoop = 25
-            self.delaianim = self.delailoop / 5
-
-    def cibler_ressource(self):
-        reponse = self.bouger()
-        if reponse == "rendu":
-            self.actioncourante = "attaqueEnCours"
-
-    def retour_batiment_mere(self):
-        reponse = self.bouger()
-        if reponse == "rendu":
-            if self.cible:
-                pass
-            else:
-                self.actioncourante = None
-        else:
-            pass
+            self.fleches.append(Fleche(self, id, proie, force))
 
     def mourir(self):
         self.etat = "mort"
         self.position_visee = None
-
-    def abandonner_ressource(self, ressource):
-        if ressource == self.cible:
-            if self.actioncourante == "ciblerressource" or self.actioncourante == "retourbatimentmere" or self.actioncourante == "ramasserresource":
-                self.actioncourante = "retourbatimentmere"
-            else:
-                self.actioncourante = "retourbatimentmere"
-                self.position_visee = [self.batimentmere.x, self.batimentmere.y]
 
 
 class Ouvrier(Perso):
@@ -901,16 +842,16 @@ class Ouvrier(Perso):
     def chercher_nouvelle_ressource(self, type, idreg):
         print("Je cherche nouvelle ressource")
         ressources = {}
-        if type == "hetre" or type == "bouleau" or type == "pin" or type == "sapin":
-            restype = {"hetre", "bouleau", "pin", "sapin"}
-            for j in restype:
-                arbres = self.parent.parent.biotopes[j]
-                ressources.update(arbres)
+        if type == "hetre" or type == "bouleau":
+            ressources.update(self.parent.parent.biotopes["hetre"])
+            ressources.update(self.parent.parent.biotopes["bouleau"])
+        elif type == "pin" or type == "sapin":
+            ressources.update(self.parent.parent.biotopes["pin"])
+            ressources.update(self.parent.parent.biotopes["sapin"])
         elif type == "bleuets" or type == "framboises" or type == "champignons":
-            restype = {"bleuets", "framboises", "champignons"}
-            for j in restype:
-                bouffe = self.parent.parent.biotopes[j]
-                ressources.update(bouffe)
+            ressources.update(self.parent.parent.biotopes["bleuets"])
+            ressources.update(self.parent.parent.biotopes["framboises"])
+            ressources.update(self.parent.parent.biotopes["champignons"])
         else:
             ressources = self.parent.parent.biotopes[type]
         nb = len(ressources)
@@ -928,7 +869,7 @@ class Ouvrier(Perso):
             # si l'ouvrier ne trouve pas de la même ressource dans son champs de vision, il l'aggrandi jusqu'à un max.
             # Ca fait en sorte qu'il prendra les ressources plus près de lui en premier, règle générale.
             if chercheressource and vision < self.champvisionmax:
-                vision += 25
+                vision += 50
             else:
                 chercheressource = False
         print("Je n'ai pas trouvé de nouvelles ressources près de ma maison")
@@ -1148,11 +1089,11 @@ class Joueur():
         print(idAttaquer)
         print(idAttaquant)
 
-        if (typeAttaquer == "Ouvrier"):
+        if typeAttaquer == "Ouvrier":
             typeAttaquer = "ouvrier"
-        elif (typeAttaquer == "Archer"):
+        elif typeAttaquer == "Archer":
             typeAttaquer = "archer"
-        elif (typeAttaquer == "Guerrier"):
+        elif typeAttaquer == "Guerrier":
             typeAttaquer = "guerrier"
 
         ennemi = self.parent.joueurs[nomJoueurAttaque].persos[typeAttaquer][idAttaquer]
@@ -1161,7 +1102,7 @@ class Joueur():
         for i in self.persos.keys():
             for j in idAttaquant:
                 if j in self.persos[i]:
-                    self.persos[i][j].chasser_ennemis(ennemi, "ciblerproie")
+                    self.persos[i][j].chasser_ennemis(ennemi, "ciblerennemi")
 
     def deplacer(self, param):
         pos, troupe = param

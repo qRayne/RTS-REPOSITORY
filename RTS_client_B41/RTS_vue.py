@@ -777,6 +777,7 @@ class Vue():
                 self.action.afficher_commande_perso()
             else:
                 self.action.persochoisi.append(mestags[2])
+                self.action.typechoisi = mestags[4]
 
     # Methodes pour multiselect
     def debuter_multiselection(self,evt):
@@ -830,7 +831,8 @@ class Vue():
 
     def attaquer_ennemis(self, evt):
         tag = self.canevas.gettags(CURRENT)
-        if self.action.persochoisi and tag[3] == "perso":
+        type = self.action.typechoisi
+        if self.action.persochoisi and (type == "Guerrier" or type == "Archer") and tag[1] != self.monnom and tag[3] == "perso":
             self.action.attaquer_ennemis(tag)
             print("je vais attaque")
         else:
@@ -921,6 +923,7 @@ class Action():
     def __init__(self,parent):
         self.parent = parent
         self.persochoisi = []
+        self.typechoisi = None
         self.ciblechoisi = None
         self.position = []
         self.btnactif = None  # le bouton choisi pour creer un batiment
