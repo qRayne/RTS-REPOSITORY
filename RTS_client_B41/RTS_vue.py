@@ -32,6 +32,7 @@ class Vue():
         self.textoutil = StringVar()
         self.textarme = StringVar()
         self.textarmur = StringVar()
+        self.imagestele = []
 
 
         self.cadreactif=None
@@ -463,6 +464,15 @@ class Vue():
         else:
             self.textarme.set(str(obj.ressources["metal"]) + "/" + str(2 + (2 * joueur.armesniveau)))
 
+    def update_stele_image(self, steleid, updatetype, steleNumber):
+        mastele = self.canevas.find_withtag(steleid)
+
+        steleimage = "stele" + str(steleNumber)
+        self.canevas.itemconfig(mastele, image=images[steleimage])
+
+
+
+
     def creer_spawn_guerrier(self):
         self.cadrespawnguerrier = Frame(self.canevas, height = 25, width = 110, bg ="black")
         self.cadrespawnguerrier.columnconfigure(2)
@@ -630,8 +640,8 @@ class Vue():
                                           tags=("statique", j, m.id, "batiment",m.montype, ""))
 
                 s = self.modele.joueurs[j].stele
-                self.canevas.create_image(s.x, s.y, image=s.imageSteleDebut,
-                                        tags=("statique", s, s.id, "stele", "", ""))
+                self.imagestele.append(self.canevas.create_image(s.x, s.y, image=s.imageStele,
+                                                                 tags=("statique", s, s.id, "stele", "", "")))
 
                 # afficher sur minicarte
                 coul=self.modele.joueurs[j].couleur[1]

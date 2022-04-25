@@ -123,7 +123,9 @@ class Stele:
         self.tempsA = int(time.time())
         self.x = x
         self.y = y
-        self.imageSteleDebut = self.parent.parent.vue.images["stele1"]
+        self.steleLevelString = "stele" + str(self.rune)
+        self.imageStele = self.parent.parent.vue.images[self.steleLevelString]
+
 
     def incrementerPoints(self):
         if self.rune >= 1:
@@ -1268,8 +1270,16 @@ class Joueur():
             for stele in self.parent.listeStele:
                 if steleAttaquer == stele.id:
                     self.steleAttaquer = stele
+                    steleid = stele.id
+                    if stele.rune >= 0:
+                        stele.rune -= 1
+                    self.parent.parent.vue.update_stele_image(steleid, "Enleve", stele.rune)
+
         elif self.stele.id == steleAttaquer and self.steleAttaquer is not None:
             self.stele.incrementerRune(self.steleAttaquer)
+            if self.stele.rune <= 4:
+                self.stele.rune += 1
+            self.parent.parent.vue.update_stele_image(self.stele.id, "Ajoute", self.stele.rune)
             self.steleAttaquer = None # la rune est voler : revenir à l'état de départ
         else:
             print("impossible d'attaquer sa propre stèle")
@@ -1556,6 +1566,9 @@ class Partie():
             id = get_prochain_id()
             self.joueurs[i].stele = Stele(self, self.joueurs[i], id, rune, x + 100, y + 100)
             self.listeStele.append(self.joueurs[i].stele)
+        id = get_prochain_id()
+        self.steleneutre = Stele(self, None, id, 2, self.aireX/2, self.aireY/2)
+        self.listeStele.append(self.steleneutre)
 
     def deplacer(self):
         for i in self.joueurs:
