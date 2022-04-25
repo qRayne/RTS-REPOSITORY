@@ -1326,6 +1326,13 @@ class Joueur():
     def volerrune(self, mestags):
         steleAttaquer = mestags[2]
 
+        # fait déplacer ton perso vers la stèle clicke
+        for stele in self.parent.listeStele:
+            if steleAttaquer == stele.id:
+                self.persos['soldat'][mestags[3][0]].deplacer([stele.x,stele.y])
+
+
+        # les possibilités face à un stèle
         if self.stele.id != steleAttaquer:
             print("stèle ennemie qui va être attaquer ")
             for stele in self.parent.listeStele:
