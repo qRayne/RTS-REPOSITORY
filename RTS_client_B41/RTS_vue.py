@@ -713,7 +713,7 @@ class Vue():
 
                     # perso mort
                     if i.etat == "mort":
-                        self.canevas.create_image(i.x, i.y, image=self.images["joueur_mort"], tags=("mobile",))
+                        self.canevas.create_image(i.x, i.y, image=self.images["joueur_mort"], tags=("statique",))
                     else:  # i.montype
                         self.canevas.create_image(i.x, i.y, anchor=S, image=self.images[i.image],
                                                   tags=("mobile", j, k, "perso", type(i).__name__, ""))
@@ -787,10 +787,10 @@ class Vue():
         mestags = self.canevas.gettags(CURRENT)
         if self.parent.monnom == mestags[1]:
             if "Ouvrier" == mestags[4]:
-                self.action.persochoisi.append(mestags[2])
+                self.action.persochoisi = mestags[2]
                 self.action.afficher_commande_perso()
             else:
-                self.action.persochoisi.append(mestags[2])
+                self.action.persochoisi = mestags[2]
                 self.action.typechoisi = mestags[4]
 
     # Methodes pour multiselect

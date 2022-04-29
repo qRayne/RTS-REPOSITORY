@@ -974,6 +974,7 @@ class Joueur():
         self.stele = None
         self.chatneuf = 0
         self.ressourcemorte = []
+        self.persosmorts = []
         self.ressources = {}
         self.mamaison = None
         self.persos = {"ouvrier": {},
@@ -1121,6 +1122,7 @@ class Joueur():
         self.mamaison = self.batiments["maison"][idmaison]
 
     def construire_batiment(self, param):
+        print(param)
         perso, sorte, pos = param
         id = get_prochain_id()
         # payer batiment
@@ -1136,8 +1138,7 @@ class Joueur():
         if (ok):
             siteconstruction = SiteConstruction(self, id, pos[0], pos[1], sorte)
             self.batiments["siteconstruction"][id] = siteconstruction
-            for i in perso:
-                self.persos["ouvrier"][i].construire_site_construction(siteconstruction)
+            self.persos["ouvrier"][perso].construire_site_construction(siteconstruction)
                 # self.persos["ouvrier"][i].construire_batiment(siteconstruction)
 
     def installer_batiment(self, batiment):
@@ -1148,7 +1149,17 @@ class Joueur():
     def jouer_prochain_coup(self):
         for j in self.persos.keys():
             for i in self.persos[j].keys():
-                self.persos[j][i].jouer_prochain_coup()
+                if self.persos[j][i].etat == "mort":
+                    # troisieme champs est à 0 pour indiquer que le cadavre est pas encore affiché
+                    self.persosmorts.append([j, i, 0])
+                    print (self.persosmorts)
+                else:
+                    self.persos[j][i].jouer_prochain_coup()
+        for perso in self.persosmorts:
+            if perso[2] == 0:
+                perso[2] = 1
+            else:
+                self.persos[perso[0]].pop(perso[1])
         # gestion des site des construction
         # sitesmorts = []
         # for i in self.batiments["siteconstruction"]:
