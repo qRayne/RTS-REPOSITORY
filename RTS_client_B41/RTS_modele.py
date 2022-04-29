@@ -1270,17 +1270,21 @@ class Joueur():
             for stele in self.parent.listeStele:
                 if steleAttaquer == stele.id:
                     self.steleAttaquer = stele
+                    self.persos['soldat'][mestags[3][0]].deplacer([stele.x, stele.y])
                     steleid = stele.id
                     if stele.rune >= 0:
                         stele.rune -= 1
                     self.parent.parent.vue.update_stele_image(steleid, "Enleve", stele.rune)
 
         elif self.stele.id == steleAttaquer and self.steleAttaquer is not None:
-            self.stele.incrementerRune(self.steleAttaquer)
-            if self.stele.rune <= 4:
-                self.stele.rune += 1
-            self.parent.parent.vue.update_stele_image(self.stele.id, "Ajoute", self.stele.rune)
-            self.steleAttaquer = None # la rune est voler : revenir à l'état de départ
+            self.persos['soldat'][mestags[3][0]].deplacer([self.stele.x, self.stele.y])
+            persoX = self.persos['soldat'][mestags[3][0]].x
+            persoY = self.persos['soldat'][mestags[3][0]].y
+            if self.stele.x == persoX and self.stele.y == persoY:
+                if self.stele.rune <= 4:
+                    self.stele.rune += 1
+                self.parent.parent.vue.update_stele_image(self.stele.id, "Ajoute", self.stele.rune)
+                self.steleAttaquer = None # la rune est voler : revenir à l'état de départ
         else:
             print("impossible d'attaquer sa propre stèle")
 
