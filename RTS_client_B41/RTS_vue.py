@@ -713,7 +713,7 @@ class Vue():
 
                     # perso mort
                     if i.etat == "mort":
-                        self.canevas.create_image(i.x, i.y, image=self.images["joueur_mort"])
+                        self.canevas.create_image(i.x, i.y, image=self.images["joueur_mort"], tags=("mobile",))
                     else:  # i.montype
                         self.canevas.create_image(i.x, i.y, anchor=S, image=self.images[i.image],
                                                   tags=("mobile", j, k, "perso", type(i).__name__, ""))
