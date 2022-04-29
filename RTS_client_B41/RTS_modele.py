@@ -412,11 +412,11 @@ class Perso():
         self.cible = None
         self.position_visee = None
         self.cibleennemi = None
-        self.vie = 100
-        self.force = 5
+        self.vie = 100 + self.parent.armureniveau
+        self.force = 5 + self.parent.armesniveau
         self.defense = 2
         self.champvision = 100
-        self.vitesse = 5
+        self.vitesse = 5 + self.parent.chaussureniveau
         self.angle = None
         self.etats_et_actions = {"bouger": self.bouger,
                                  "ciblerennemi": None,
