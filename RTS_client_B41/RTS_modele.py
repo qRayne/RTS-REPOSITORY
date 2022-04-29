@@ -388,6 +388,7 @@ class Fleche:
         if dist <= self.demitaille:
             self.parent.fleches.remove(self)
             self.ennemi.infligerdegats(self.force)
+            print(self.ennemi.vie)
             if self.ennemi.vie <= 0:
                 self.ennemi.mourir()
         else:
@@ -467,7 +468,7 @@ class Perso():
             ang = Helper.calcAngle(self.x, self.y, x, y)
             x1, y1 = Helper.getAngledPoint(ang, self.vitesse, self.x, self.y)
             ######## ICI METTRE TEST PROCHAIN PAS POUR VOIR SI ON PEUT AVANCER
-            self.test_etat_du_sol(x1, y1)
+            # self.test_etat_du_sol(x1, y1)
             ######## FIN DE TEST POUR SURFACE MARCHEE
             # si tout ba bien on continue avec la nouvelle valeur
             self.x, self.y = x1, y1
@@ -514,14 +515,14 @@ class Perso():
             casey = int(casey) + 1
         #####AJOUTER TEST DE LIMITE
         case = self.parent.parent.trouver_case(x1, y1)
-        #
+
         # test si different de 0 (0=plaine), voir Partie pour attribution des valeurs
-        # if case.montype != "plaine" or case.montype != "foretnoire" or case.montype != "prairie":
-        #     # test pour être sur que de n'est 9 (9=batiment)
-        #     if case.montype != "batiment":
-        #         print("marche dans ", case.montype)
-        #     else:
-        #         print("marche dans batiment")
+        if case.montype != "plaine" and case.montype != "foretnoire" and case.montype != "prairie":
+            # test pour être sur que de n'est 9 (9=batiment)
+            if case.montype != "batiment":
+                print("marche dans ", case.montype)
+            else:
+                print("marche dans batiment")
 
     def test_etat_du_sol1(self, x1, y1):
         ######## SINON TROUVER VOIE DE CONTOURNEMENT
@@ -1270,22 +1271,21 @@ class Joueur():
             for stele in self.parent.listeStele:
                 if steleAttaquer == stele.id:
                     self.steleAttaquer = stele
+                    self.persos['soldat'][mestags[3][0]].deplacer([stele.x, stele.y])
                     steleid = stele.id
-                    if stele.rune > 0:
+                    if stele.rune >= 0:
                         stele.rune -= 1
-                        self.parent.parent.vue.update_stele_image(steleid, "Enleve", stele.rune)
-                    else:
-                        self.steleAttaquer = None
-
-
+                    self.parent.parent.vue.update_stele_image(steleid, "Enleve", stele.rune)
 
         elif self.stele.id == steleAttaquer and self.steleAttaquer is not None:
-            #self.stele.incrementerRune(self.steleAttaquer)
-            if self.stele.rune < 4:
-                self.stele.rune += 1
+            self.persos['soldat'][mestags[3][0]].deplacer([self.stele.x, self.stele.y])
+            persoX = self.persos['soldat'][mestags[3][0]].x
+            persoY = self.persos['soldat'][mestags[3][0]].y
+            if self.stele.x == persoX and self.stele.y == persoY:
+                if self.stele.rune <= 4:
+                    self.stele.rune += 1
                 self.parent.parent.vue.update_stele_image(self.stele.id, "Ajoute", self.stele.rune)
-
-            self.steleAttaquer = None # la rune est voler : revenir à l'état de départ
+                self.steleAttaquer = None # la rune est voler : revenir à l'état de départ
         else:
             print("impossible d'attaquer sa propre stèle")
 
@@ -1574,7 +1574,6 @@ class Partie():
         id = get_prochain_id()
         self.steleneutre = Stele(self, None, id, 2, self.aireX/2, self.aireY/2)
         self.listeStele.append(self.steleneutre)
-
 
     def deplacer(self):
         for i in self.joueurs:
