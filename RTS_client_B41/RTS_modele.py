@@ -391,6 +391,7 @@ class Fleche:
             print(self.ennemi.vie)
             if self.ennemi.vie <= 0:
                 self.ennemi.mourir()
+                self.parent.actioncourante = None
         else:
             dist = Helper.calcDistance(self.x, self.y, self.ennemix, self.ennemiy)
             if dist < self.vitesse:
@@ -416,7 +417,7 @@ class Perso():
         self.force = 5
         self.defense = 2
         self.champvision = 100
-        self.vitesse = 5
+        self.vitesse = 25
         self.angle = None
         self.etats_et_actions = {"bouger": self.bouger,
                                  "ciblerennemi": None,
@@ -542,6 +543,9 @@ class Perso():
         #     else:
         #         print("marche dans batiment")
 
+    def mourir(self):
+        self.etat = "mort"
+        self.position_visee = None
 
 class Guerrier(Perso):
     def __init__(self, parent, id, maison, couleur, x, y, montype):
@@ -897,9 +901,6 @@ class Ouvrier(Perso):
                 self.actioncourante = "retourbatimentmere"
                 self.position_visee = [self.batimentmere.x, self.batimentmere.y]
 
-    def mourir(self):
-        self.etat = "mort"
-        self.position_visee = None
 
     ## PAS UTILISER POUR LE MOMENT
     def scanner_alentour(self):
