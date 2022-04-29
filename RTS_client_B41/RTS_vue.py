@@ -648,6 +648,10 @@ class Vue():
                 x1 = (m.x/self.modele.aireX) * self.tailleminicarte
                 y1 = (m.y/self.modele.aireY) * self.tailleminicarte
                 self.minicarte.create_rectangle(x1-2, y1-2, x1+2, y1+2, fill=coul, tags=(j, m.id, "artefact", "maison"))
+        s = self.modele.listeStele[-1]
+        self.imagestele.append(self.canevas.create_image(s.x, s.y, image=s.imageStele,
+                                                         tags=("statique", s, s.id, "stele", "", "")))
+
 
 
     def afficher_bio(self, bio):
