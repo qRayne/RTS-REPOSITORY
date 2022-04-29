@@ -388,6 +388,7 @@ class Fleche:
         if dist <= self.demitaille:
             self.parent.fleches.remove(self)
             self.ennemi.infligerdegats(self.force)
+            print(self.ennemi.vie)
             if self.ennemi.vie <= 0:
                 self.ennemi.mourir()
         else:
@@ -467,7 +468,7 @@ class Perso():
             ang = Helper.calcAngle(self.x, self.y, x, y)
             x1, y1 = Helper.getAngledPoint(ang, self.vitesse, self.x, self.y)
             ######## ICI METTRE TEST PROCHAIN PAS POUR VOIR SI ON PEUT AVANCER
-            self.test_etat_du_sol(x1, y1)
+            # self.test_etat_du_sol(x1, y1)
             ######## FIN DE TEST POUR SURFACE MARCHEE
             # si tout ba bien on continue avec la nouvelle valeur
             self.x, self.y = x1, y1
@@ -514,14 +515,14 @@ class Perso():
             casey = int(casey) + 1
         #####AJOUTER TEST DE LIMITE
         case = self.parent.parent.trouver_case(x1, y1)
-        #
+
         # test si different de 0 (0=plaine), voir Partie pour attribution des valeurs
-        # if case.montype != "plaine" or case.montype != "foretnoire" or case.montype != "prairie":
-        #     # test pour être sur que de n'est 9 (9=batiment)
-        #     if case.montype != "batiment":
-        #         print("marche dans ", case.montype)
-        #     else:
-        #         print("marche dans batiment")
+        if case.montype != "plaine" and case.montype != "foretnoire" and case.montype != "prairie":
+            # test pour être sur que de n'est 9 (9=batiment)
+            if case.montype != "batiment":
+                print("marche dans ", case.montype)
+            else:
+                print("marche dans batiment")
 
     def test_etat_du_sol1(self, x1, y1):
         ######## SINON TROUVER VOIE DE CONTOURNEMENT
