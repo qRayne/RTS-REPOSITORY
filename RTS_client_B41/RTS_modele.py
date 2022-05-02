@@ -1111,6 +1111,7 @@ class Joueur():
 
     def deplacer(self, param):
         pos, troupe = param
+        print(param)
         for i in troupe:
             for j in self.persos.keys():
                 if i in self.persos[j]:

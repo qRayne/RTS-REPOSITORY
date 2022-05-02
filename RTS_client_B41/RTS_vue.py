@@ -787,10 +787,10 @@ class Vue():
         mestags = self.canevas.gettags(CURRENT)
         if self.parent.monnom == mestags[1]:
             if "Ouvrier" == mestags[4]:
-                self.action.persochoisi = mestags[2]
+                self.action.persochoisi = [mestags[2]]
                 self.action.afficher_commande_perso()
             else:
-                self.action.persochoisi = mestags[2]
+                self.action.persochoisi = [mestags[2]]
                 self.action.typechoisi = mestags[4]
 
     # Methodes pour multiselect
