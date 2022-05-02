@@ -1294,10 +1294,15 @@ class Joueur():
             persoX = self.persos['soldat'][mestags[3][0]].x
             persoY = self.persos['soldat'][mestags[3][0]].y
             if self.stele.x == persoX and self.stele.y == persoY:
-                if self.stele.rune <= 4:
-                    self.stele.rune += 1
-                self.parent.parent.vue.update_stele_image(self.stele.id, "Ajoute", self.stele.rune)
-                self.steleAttaquer = None # la rune est voler : revenir à l'état de départ
+                if self.persos['soldat'][mestags[3][0]].etat == "vivant":  # le soldat reste vivant durant la traverser
+                    if self.stele.rune <= 4:
+                        self.stele.rune += 1
+                    self.parent.parent.vue.update_stele_image(self.stele.id, "Ajoute", self.stele.rune)
+                    self.steleAttaquer = None # la rune est voler : revenir à l'état de départ
+                else:
+                    self.stele.rune -= 1
+                    steleAttaquer.rune += 1
+                    self.parent.parent.vue.update_stele_image(steleAttaquer.id, "Enleve", steleAttaquer.rune)
         else:
             print("impossible d'attaquer sa propre stèle")
 

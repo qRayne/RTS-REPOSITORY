@@ -234,11 +234,11 @@ class Controleur():
         self.modele.calc_stats()
 
     def verifierPoint(self):
-        nomJoueurGagant = None
+        nom_joueur_gagnant = None
         for i in self.modele.joueurs:
             if self.modele.joueurs[i].nbPointsRune >= 1500:
-                nomJoueurGagant = self.modele.joueurs[i].nom
-        return nomJoueurGagant
+                nom_joueur_gagnant = self.modele.joueurs[i].nom
+        return nom_joueur_gagnant
 
     def game_over(self):
         self.gameover = True
