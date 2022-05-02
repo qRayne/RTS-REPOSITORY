@@ -563,19 +563,16 @@ class Guerrier(Perso):
         self.vie = 50
         self.force = 6
         self.defense = 3
-        self.champchasse = 20
+        self.champchasse = 120
         self.delailoop = 25
         self.quota = 20
         self.delaianim = self.delailoop / 5
         self.ramassage = 0
-        self.javelots = []
         self.fleches = []
         self.cibleennemi = None
         self.etats_et_actions = {"ciblerennemi": self.cibler_ennemis,
                                  "bouger": self.bouger,
-                                 "modeAttaque": self.mode_Attaque,
-                                 "retourbatimentmere": self.retour_batiment_mere,
-                                 "ciblerressource": self.cibler_ressource
+                                 "modeAttaque": self.mode_Attaque
                                  }
 
     def chasser_ennemis(self, ennemis, actiontype):
@@ -586,49 +583,23 @@ class Guerrier(Perso):
     def cibler_ennemis(self):
         self.position_visee = [self.cible.x, self.cible.y]
         reponse = self.bouger()
-        if reponse == "rendu":
-            self.actioncourante = "attaqueEnCours"
-        elif reponse <= self.champchasse and self.cible.etat == "vivant":
+        if reponse <= self.champchasse:
             self.actioncourante = "modeAttaque"
             print("mode attaque")
 
     def mode_Attaque(self):
-        self.lancer_fleches(self.cible)
+        self.lancer_fleches(self.cible, self.force)
         for i in self.fleches:
             i.bouger()
 
-    def lancer_fleches(self, proie):
+    def lancer_fleches(self, proie, force):
         if self.fleches == []:
             id = get_prochain_id()
-            self.fleches.append(Fleche(self, id, proie))
-
-    def cibler_ressource(self):
-        reponse = self.bouger()
-        if reponse == "rendu":
-            self.actioncourante = "attaqueEnCours"
-
-    def retour_batiment_mere(self):
-        reponse = self.bouger()
-        if reponse == "rendu":
-            if self.cible:
-                pass
-            else:
-                self.actioncourante = None
-        else:
-            pass
+            self.fleches.append(Fleche(self, id, proie, force))
 
     def mourir(self):
         self.etat = "mort"
         self.position_visee = None
-
-    def abandonner_ressource(self, ressource):
-        if ressource == self.cible:
-            if self.actioncourante == "ciblerressource" or self.actioncourante == "retourbatimentmere" or self.actioncourante == "ramasserresource":
-                self.actioncourante = "retourbatimentmere"
-            else:
-                self.actioncourante = "retourbatimentmere"
-                self.position_visee = [self.batimentmere.x, self.batimentmere.y]
-
 
 class Archer(Perso):
     def __init__(self, parent, id, maison, couleur, x, y, montype):
@@ -651,7 +622,6 @@ class Archer(Perso):
         self.quota = 20
         self.delaianim = self.delailoop / 5
         self.ramassage = 0
-        self.javelots = []
         self.fleches = []
         self.cibleennemi = None
         self.etats_et_actions = {"ciblerennemi": self.cibler_ennemis,
@@ -670,6 +640,7 @@ class Archer(Perso):
         if reponse <= self.champchasse:
             self.actioncourante = "modeAttaque"
             print("mode attaque")
+
 
     def mode_Attaque(self):
         self.lancer_fleches(self.cible, self.force)
@@ -1295,10 +1266,15 @@ class Joueur():
             persoX = self.persos['soldat'][mestags[3][0]].x
             persoY = self.persos['soldat'][mestags[3][0]].y
             if self.stele.x == persoX and self.stele.y == persoY:
-                if self.stele.rune <= 4:
-                    self.stele.rune += 1
-                self.parent.parent.vue.update_stele_image(self.stele.id, "Ajoute", self.stele.rune)
-                self.steleAttaquer = None # la rune est voler : revenir à l'état de départ
+                if self.persos['soldat'][mestags[3][0]].etat == "vivant":  # le soldat reste vivant durant la traverser
+                    if self.stele.rune <= 4:
+                        self.stele.rune += 1
+                    self.parent.parent.vue.update_stele_image(self.stele.id, "Ajoute", self.stele.rune)
+                    self.steleAttaquer = None # la rune est voler : revenir à l'état de départ
+                else:
+                    self.stele.rune -= 1
+                    steleAttaquer.rune += 1
+                    self.parent.parent.vue.update_stele_image(steleAttaquer.id, "Enleve", steleAttaquer.rune)
         else:
             print("impossible d'attaquer sa propre stèle")
 
