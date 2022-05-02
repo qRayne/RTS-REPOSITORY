@@ -981,7 +981,7 @@ class Action():
     def construire_batiment(self,pos):
         self.btnactif.config(bg="SystemButtonFace")
         self.btnactif = None
-        action = [self.parent.monnom, "construirebatiment", [self.persochoisi, self.prochaineaction, pos]]
+        action = [self.parent.monnom, "construirebatiment", [self.persochoisi[0], self.prochaineaction, pos]]
         self.parent.parent.actionsrequises.append(action)
 
     def afficher_commande_perso(self):
