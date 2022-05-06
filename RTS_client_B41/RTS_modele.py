@@ -1121,17 +1121,17 @@ class Joueur():
     def jouer_prochain_coup(self):
         for j in self.persos.keys():
             for i in self.persos[j].keys():
-                if self.persos[j][i].etat == "mort":
-                    # troisieme champs est à 0 pour indiquer que le cadavre est pas encore affiché
-                    self.persosmorts.append([j, i, 0])
-                    print (self.persosmorts)
-                else:
-                    self.persos[j][i].jouer_prochain_coup()
-        for perso in self.persosmorts:
-            if perso[2] == 0:
-                perso[2] = 1
-            else:
-                self.persos[perso[0]].pop(perso[1])
+                # if self.persos[j][i].etat == "mort":
+                #     # troisieme champs est à 0 pour indiquer que le cadavre est pas encore affiché
+                #     self.persosmorts.append([j, i, 0])
+                #     print (self.persosmorts)
+                # else:
+                self.persos[j][i].jouer_prochain_coup()
+        # for perso in self.persosmorts:
+        #     if perso[2] == 0:
+        #         perso[2] = 1
+        #     else:
+        #         self.persos[perso[0]].pop(perso[1])
         # gestion des site des construction
         # sitesmorts = []
         # for i in self.batiments["siteconstruction"]:
