@@ -604,7 +604,7 @@ class Guerrier(Perso):
         self.vie = 50
         self.force = 6
         self.defense = 3
-        self.champchasse = 120
+        self.champchasse = 50
         self.delailoop = 25
         self.quota = 20
         self.delaianim = self.delailoop / 5
