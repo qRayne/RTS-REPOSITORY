@@ -673,7 +673,6 @@ class Vue():
         return [x0, y0, x2, y2]
 
     def afficher_jeu(self):
-
         # On efface tout ce qui est 'mobile' (un tag)
         self.canevas.delete("mobile")
 
@@ -731,11 +730,11 @@ class Vue():
 
                     # dessiner fleche de l'archer
                     if p == "soldat":
-                        for b in self.modele.joueurs[j].persos[p][k].fleches:
+                        for b in self.modele.joueurs[j].persos[p][k].knifes:
                             self.canevas.create_image(b.x, b.y, image=self.images[b.image],
                                                       tags=("mobile", j, b.id, "", type(p).__name__, ""))
 
-                    elif p == "archer":
+                    if p == "archer":
                         for b in self.modele.joueurs[j].persos[p][k].fleches:
                             self.canevas.create_image(b.x, b.y, image=self.images[b.image],
                                                       tags=("mobile", j, b.id, "", type(p).__name__, ""))

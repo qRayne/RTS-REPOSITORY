@@ -942,7 +942,7 @@ class Caseregion():
 class Joueur():
     classespersos = {"ouvrier": Ouvrier,
                      "soldat": Guerrier,
-                     "archer": Archer, }
+                     "archer": Archer }
 
     def __init__(self, parent, id, nom, couleur, x, y, nbPointsRune):
         self.parent = parent
