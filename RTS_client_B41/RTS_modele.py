@@ -599,10 +599,6 @@ class Guerrier(Perso):
                 self.actioncourante = None
                 self.cible = None
 
-
-
-
-
     def mourir(self):
         self.etat = "mort"
         self.position_visee = None

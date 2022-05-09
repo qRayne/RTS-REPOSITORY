@@ -710,7 +710,7 @@ class Vue():
                 for k in self.modele.joueurs[j].persos[p].keys():
                     i = self.modele.joueurs[j].persos[p][k]
 
-                    # perso mort
+                    # persos morts
                     if i.etat == "mort":
                         self.canevas.create_image(i.x, i.y, image=self.images["joueur_mort"], tags=("mobile",))
                     else:  # i.montype
