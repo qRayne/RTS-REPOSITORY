@@ -399,6 +399,50 @@ class Fleche:
                 self.parent.actioncourante = "ciblerennemi"
 
 
+class Knife:
+    def __init__(self, parent, id, ennemi, force):
+        self.parent = parent
+        self.id = id
+        self.vitesse = 18
+        self.force = force
+        self.distance = 150
+        self.taille = 20
+        self.demitaille = 10
+        self.ennemi = ennemi
+        self.ennemix = self.ennemi.x
+        self.ennemiy = self.ennemi.y
+        self.x = self.parent.x
+        self.y = self.parent.y
+        self.ang = Helper.calcAngle(self.x, self.y, self.ennemix, self.ennemiy)
+        angquad = math.degrees(self.ang)
+        dir = "DB"
+        if 0 <= angquad <= 89:
+            dir = "DB"
+        elif -90 <= angquad <= -1:
+            dir = "DH"
+        if 90 <= angquad <= 179:
+            dir = "GB"
+        elif -180 <= angquad <= -91:
+            dir = "GH"
+        self.image = "knife" + dir
+
+    def bouger(self):
+        self.x, self.y, = Helper.getAngledPoint(self.ang, self.vitesse, self.x, self.y)
+        dist = Helper.calcDistance(self.x, self.y, self.ennemi.x, self.ennemi.y)
+        if dist <= self.demitaille:
+            self.parent.knifes.remove(self)
+            self.ennemi.infligerdegats(self.force)
+            print(self.ennemi.vie)
+            if self.ennemi.vie <= 0:
+                self.ennemi.mourir()
+                self.parent.actioncourante = None
+        else:
+            dist = Helper.calcDistance(self.x, self.y, self.ennemix, self.ennemiy)
+            if dist < self.vitesse:
+                self.parent.knifes.remove(self)
+                self.parent.actioncourante = "ciblerennemi"
+
+
 class Perso():
     def __init__(self, parent, id, batiment, couleur, x, y, montype):
         self.parent = parent
@@ -557,9 +601,6 @@ class Guerrier(Perso):
         self.etat = "vivant"
         self.distancefeumax = 50
         self.typeressource = None
-        self.distancefeu = 50
-        self.delaifeu = 0
-        self.delaifeumax = 30
         self.vie = 50
         self.force = 6
         self.defense = 3
@@ -568,7 +609,7 @@ class Guerrier(Perso):
         self.quota = 20
         self.delaianim = self.delailoop / 5
         self.ramassage = 0
-        self.fleches = []
+        self.knifes = []
         self.cibleennemi = None
         self.etats_et_actions = {"ciblerennemi": self.cibler_ennemis,
                                  "bouger": self.bouger,
@@ -588,14 +629,14 @@ class Guerrier(Perso):
             print("mode attaque")
 
     def mode_Attaque(self):
-        self.lancer_fleches(self.cible, self.force)
-        for i in self.fleches:
+        self.lancer_knifes(self.cible, self.force)
+        for i in self.knifes:
             i.bouger()
 
-    def lancer_fleches(self, proie, force):
-        if self.fleches == []:
+    def lancer_knifes(self, proie, force):
+        if self.knifes == []:
             id = get_prochain_id()
-            self.fleches.append(Fleche(self, id, proie, force))
+            self.knifes.append(Knife(self, id, proie, force))
 
     def mourir(self):
         self.etat = "mort"
@@ -609,11 +650,7 @@ class Archer(Perso):
         self.cible = None
         self.angle = None
         self.etat = "vivant"
-        self.distancefeumax = 50
         self.typeressource = None
-        self.distancefeu = 50
-        self.delaifeu = 0
-        self.delaifeumax = 30
         self.vie = 30
         self.force = 10
         self.defense = 1
@@ -930,7 +967,7 @@ class Caseregion():
 class Joueur():
     classespersos = {"ouvrier": Ouvrier,
                      "soldat": Guerrier,
-                     "archer": Archer, }
+                     "archer": Archer }
 
     def __init__(self, parent, id, nom, couleur, x, y, nbPointsRune):
         self.parent = parent
@@ -1246,6 +1283,10 @@ class Joueur():
                     p.qteramassage = 1 + (self.outilsniveau)
 
         self.parent.parent.vue.update_upgrade_labels()
+
+    def mourir(self):
+        self.etat = "mort"
+        self.position_visee = None
 
     def volerrune(self, mestags):
         steleAttaquer = mestags[2]
