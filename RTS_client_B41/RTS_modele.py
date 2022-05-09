@@ -413,6 +413,7 @@ class Perso():
         self.cible = None
         self.position_visee = None
         self.cibleennemi = None
+        self.delaiattaque = 0
         self.vie = 100
         self.force = 5
         self.defense = 2
@@ -457,8 +458,9 @@ class Perso():
             reponse = self.etats_et_actions[self.actioncourante]()
 
     def deplacer(self, pos):
-        self.position_visee = pos
-        self.actioncourante = "bouger"
+        if self.etat != "mort":
+            self.position_visee = pos
+            self.actioncourante = "bouger"
 
     def bouger(self):
         if self.position_visee:
@@ -558,8 +560,7 @@ class Guerrier(Perso):
         self.distancefeumax = 50
         self.typeressource = None
         self.distancefeu = 50
-        self.delaifeu = 0
-        self.delaifeumax = 30
+        self.delaiattaquemax = 25
         self.vie = 50
         self.force = 6
         self.defense = 3
@@ -583,19 +584,24 @@ class Guerrier(Perso):
     def cibler_ennemis(self):
         self.position_visee = [self.cible.x, self.cible.y]
         reponse = self.bouger()
-        if reponse <= self.champchasse:
+        if reponse == "rendu":
             self.actioncourante = "modeAttaque"
             print("mode attaque")
 
     def mode_Attaque(self):
-        self.lancer_fleches(self.cible, self.force)
-        for i in self.fleches:
-            i.bouger()
+        if self.delaiattaque == 0:
+            self.cible.vie -= (self.force - self.cible.defense)
+            self.delaiattaque = self.delaiattaquemax
+            print("vie ennemie: ", self.cible.vie)
+            if self.cible.vie <= 0:
+                self.cible.vie = 0
+                self.cible.mourir()
+                self.actioncourante = None
+                self.cible = None
 
-    def lancer_fleches(self, proie, force):
-        if self.fleches == []:
-            id = get_prochain_id()
-            self.fleches.append(Fleche(self, id, proie, force))
+
+
+
 
     def mourir(self):
         self.etat = "mort"
@@ -612,8 +618,7 @@ class Archer(Perso):
         self.distancefeumax = 50
         self.typeressource = None
         self.distancefeu = 50
-        self.delaifeu = 0
-        self.delaifeumax = 30
+        self.delaiattaquemax = 50
         self.vie = 30
         self.force = 10
         self.defense = 1
@@ -637,13 +642,17 @@ class Archer(Perso):
     def cibler_ennemis(self):
         self.position_visee = [self.cible.x, self.cible.y]
         reponse = self.bouger()
-        if reponse <= self.champchasse:
-            self.actioncourante = "modeAttaque"
-            print("mode attaque")
+        # Si l'archer est "rendu", il est trop près pour attaquer
+        if reponse != "rendu":
+            if reponse <= self.champchasse:
+                self.actioncourante = "modeAttaque"
+                print("mode attaque")
 
 
     def mode_Attaque(self):
-        self.lancer_fleches(self.cible, self.force)
+        if self.delaiattaque == 0:
+            self.lancer_fleches(self.cible, self.force)
+            self.delaiattaque = self.delaiattaquemax
         for i in self.fleches:
             i.bouger()
 
@@ -652,9 +661,12 @@ class Archer(Perso):
             id = get_prochain_id()
             self.fleches.append(Fleche(self, id, proie, force))
 
-    def mourir(self):
-        self.etat = "mort"
-        self.position_visee = None
+    def deplacer(self, pos):
+        if self.etat != "mort":
+            self.position_visee = pos
+            self.actioncourante = "bouger"
+            if self.delaiattaque > 0:
+                self.delaiattaque -= 1
 
 
 class Ouvrier(Perso):
@@ -668,7 +680,7 @@ class Ouvrier(Perso):
         self.qteramassage = 1 + self.parent.outilsniveau
         self.cibletemp = None
         self.dejavisite = []
-        self.valeur = 30
+        self.vie = 30
         self.champvision = 100
         self.champvisionmax = 400
         self.champchasse = 120
@@ -1121,25 +1133,10 @@ class Joueur():
     def jouer_prochain_coup(self):
         for j in self.persos.keys():
             for i in self.persos[j].keys():
-                # if self.persos[j][i].etat == "mort":
-                #     # troisieme champs est à 0 pour indiquer que le cadavre est pas encore affiché
-                #     self.persosmorts.append([j, i, 0])
-                #     print (self.persosmorts)
-                # else:
-                self.persos[j][i].jouer_prochain_coup()
-        # for perso in self.persosmorts:
-        #     if perso[2] == 0:
-        #         perso[2] = 1
-        #     else:
-        #         self.persos[perso[0]].pop(perso[1])
-        # gestion des site des construction
-        # sitesmorts = []
-        # for i in self.batiments["siteconstruction"]:
-        #     site = self.batiments["siteconstruction"][i].jouer_prochain_coup()
-        #     if site:
-        #         sitesmorts.append(site)
-        # for i in sitesmorts:
-        #     self.batiments['siteconstruction'].pop(i.id)
+                perso = self.persos[j][i]
+                perso.jouer_prochain_coup()
+                if perso.delaiattaque > 0:
+                    perso.delaiattaque -= 1
 
     # pas utilise for some reason
     def creer_perso(self, param):

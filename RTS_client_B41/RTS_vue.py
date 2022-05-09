@@ -713,7 +713,7 @@ class Vue():
 
                     # perso mort
                     if i.etat == "mort":
-                        self.canevas.create_image(i.x, i.y, image=self.images["joueur_mort"], tags=("statique",))
+                        self.canevas.create_image(i.x, i.y, image=self.images["joueur_mort"], tags=("mobile",))
                     else:  # i.montype
                         self.canevas.create_image(i.x, i.y, anchor=S, image=self.images[i.image],
                                                   tags=("mobile", j, k, "perso", type(i).__name__, ""))
@@ -724,7 +724,7 @@ class Vue():
                                                       "mobile", j, p, "perso", type(i).__name__, "persochoisi"))
 
                     # dessiner javelot de l'ouvrier
-                    if p == "ouvrier":
+                    if p == "ouvrier" and i.etat != "mort":
                         for b in self.modele.joueurs[j].persos[p][k].javelots:
                             self.canevas.create_image(b.x, b.y, image=self.images[b.image],
                                                       tags=("mobile", j, b.id, "", type(b).__name__, ""))
