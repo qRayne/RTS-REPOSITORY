@@ -20,6 +20,8 @@ class SiteConstruction():
         self.etat = "attente"
         self.sorte = sorte
         self.delai = Partie.valeurs[self.sorte]["delai"]
+        self.delaimax = Partie.valeurs[self.sorte]["delai"]
+        self.longueur = Partie.valeurs[self.sorte]["longueur"]
 
     def decremente_delai(self):
         self.delai -= 1
@@ -52,6 +54,8 @@ class MaisonLongue(Batiment):
         Batiment.__init__(self, parent, id, x, y)
         self.image = couleur[0] + "_" + montype
         self.montype = montype
+        self.largeur = 128
+        self.progres = 0
         self.tier = 1
         self.ressources = {"metal": 1000,
                            "bois": 1000,
@@ -65,6 +69,8 @@ class Forge(Batiment):
         Batiment.__init__(self, parent, id, x, y)
         self.image = couleur[0] + "_" + montype
         self.montype = montype
+        self.largeur = 128
+        self.progres = 0
         self.hp = 75
         self.defense = 5
         self.prixConstruction = {"cuivre": 6,
@@ -79,6 +85,8 @@ class Ferme(Batiment):
         self.image = couleur[0] + "_" + montype
         self.montype = montype
         self.valeur = 5
+        self.largeur = 128
+        self.progres = 0
 
 
 class Fournaise(Batiment):
@@ -90,6 +98,8 @@ class Fournaise(Batiment):
         self.perso = 0
         self.arret = False
         self.prixConstruction = {"lingot": 6}
+        self.largeur = 128
+        self.progres = 0
 
 
 class Caserne(Batiment):
@@ -99,6 +109,8 @@ class Caserne(Batiment):
         self.montype = montype
         self.maxperso = 20
         self.perso = 0
+        self.largeur = 128
+        self.progres = 0
 
 
 class NPC:
@@ -723,7 +735,7 @@ class Ouvrier(Perso):
                         else:
                             self.actioncourante = None
                     else:
-                        rep = self.chercher_nouvelle_ressource(self.cible.montype, self.cible.idregion)
+                        rep = self.chercher_nouvelle_ressource(self.cible.montype)
                         self.cibler(rep)
                 if self.cible:
                     self.cibler(self.cible)
@@ -739,7 +751,10 @@ class Ouvrier(Perso):
     def cibler_ressource(self):
         reponse = self.bouger()
         if reponse == "rendu":
-            self.actioncourante = "ramasserressource"
+            if self.cible.valeur <= 0:
+                self.cibler(self.chercher_nouvelle_ressource(self.cible.montype))
+            else:
+                self.actioncourante = "ramasserressource"
 
     def cibler_site_construction(self):
         reponse = self.bouger()
@@ -825,7 +840,7 @@ class Ouvrier(Perso):
             id = get_prochain_id()
             self.javelots.append(Javelot(self, id, proie))
 
-    def chercher_nouvelle_ressource(self, type, idreg):
+    def chercher_nouvelle_ressource(self, type):
         print("Je cherche nouvelle ressource")
         ressources = {}
         if type == "hetre" or type == "bouleau":
@@ -1282,31 +1297,36 @@ class Partie():
                           "bois": 50,
                           "pierre": 0,
                           "metal": 0,
-                          "delai": 10
+                          "delai": 50,
+                          "longueur": 60
                           },
                "caserne": {"nourriture": 0,
                            "bois": 50,
                            "pierre": 0,
                            "metal": 0,
-                           "delai": 10
+                           "delai": 75,
+                           "longueur": 128
                            },
                "forge": {"nourriture": 0,
                          "bois": 50,
                          "pierre": 20,
                          "metal": 10,
-                         "delai": 10
+                         "delai": 37.5,
+                         "longueur": 150
                          },
                "fournaise": {"nourriture": 0,
                              "bois": 50,
                              "pierre": 25,
                              "metal": 0,
-                             "delai": 10
+                             "delai": 50,
+                             "longueur": 70
                              },
                "ferme": {"nourriture": 0,
                          "bois": 50,
                          "pierre": 25,
                          "metal": 0,
-                         "delai": 10
+                         "delai": 25,
+                         "longueur": 150
                          }
                }
 

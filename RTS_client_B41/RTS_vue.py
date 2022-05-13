@@ -698,9 +698,17 @@ class Vue():
             # ajuster les constructions de chaque joueur
             for p in self.modele.joueurs[j].batiments['siteconstruction']:
                 s = self.modele.joueurs[j].batiments['siteconstruction'][p]
+                x, y = s.x, s.y
                 if s.etat == "attente":  # s.montype
-                    self.canevas.create_image(s.x, s.y, anchor=CENTER, image=self.images["siteX"],
+                    self.canevas.create_image(x, y, anchor=CENTER, image=self.images["siteX"],
                                               tags=("mobile", j, p, "batiment", type(s).__name__, ""))
+                    # l = longueur de la barre de délai total d'apres la largeur du batiment, pl = longueur de la barre de progres
+                    l = (s.longueur/2)
+                    pl = ((s.delaimax - s.delai) / s.delaimax) * s.longueur
+                    self.canevas.create_rectangle(x - l, y + 20, x + l, y + 30, fill="black", outline="white",
+                                              tags=("mobile", ))
+                    self.canevas.create_rectangle(x - l, y + 21, (x - l) + pl, y + 29, fill="lime",
+                                                  tags=("mobile",))
                 else:  # s.montype
                     self.canevas.create_image(s.x, s.y, anchor=CENTER, image=self.images["EnConstruction"],
                                               tags=("mobile", j, p, "batiment", type(s).__name__, ""))
@@ -718,9 +726,7 @@ class Vue():
                                                   tags=("mobile", j, k, "perso", type(i).__name__, ""))
 
                     if k in self.action.persochoisi:  # i.montype
-                        self.canevas.create_rectangle(i.x - 10, i.y + 5, i.x + 10, i.y + 10, fill="yellow",
-                                                      tags=(
-                                                      "mobile", j, p, "perso", type(i).__name__, "persochoisi"))
+                        self.canevas.create_image(i.x-5, i.y, image=self.images["uniteselect"], tags=("mobile",))
 
                     # dessiner javelot de l'ouvrier
                     if p == "ouvrier" and i.etat != "mort":
