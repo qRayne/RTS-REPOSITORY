@@ -359,7 +359,7 @@ class Vue():
         self.joueurs=ttk.Combobox(self.cadreparler,
                                   values=list(self.modele.joueurs.keys()))
         self.entreechat=Entry(self.cadreparler,width=20)
-        self.entreechat.bind("<Return>")#,self.action.envoyerchat)
+        self.entreechat.bind("<Return>",self.action.envoyer_chat)
         self.joueurs.pack(expand=1,fill=X)
         self.entreechat.pack(expand=1,fill=X)
         self.cadreparler.pack(expand=1,fill=X)
@@ -1003,6 +1003,10 @@ class Action():
             action = [self.parent.monnom, "chatter", [self.parent.monnom + ": " + txt, self.parent.monnom, joueur]]
             self.parent.parent.actionsrequises.append(action)
 
+        if txt == "/sauce":
+            action = [self.parent.monnom, "cheats", []]
+            self.parent.parent.actionsrequises.append(action)
+
     def voler_rune(self,tag):
         if self.persochoisi:
             for i in self.parent.modele.joueurs[self.parent.monnom].persos["soldat"]:
@@ -1014,7 +1018,7 @@ class Action():
     def chatter(self):
         if self.chaton == 0:
             x1, x2 = self.parent.scrollH.get()
-            x3 = self.parent.modele.aireX * x1
+            x3 = self.parent.modele.aireX * x2
             y1, y2 = self.parent.scrollV.get()
             y3 = self.parent.modele.aireY * y1
             self.parent.cadrechaton = self.parent.canevas.create_window(x3, y3, window=self.parent.cadrechat, anchor=NE)
