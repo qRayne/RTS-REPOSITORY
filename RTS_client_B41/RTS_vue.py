@@ -1003,7 +1003,7 @@ class Action():
             action = [self.parent.monnom, "chatter", [self.parent.monnom + ": " + txt, self.parent.monnom, joueur]]
             self.parent.parent.actionsrequises.append(action)
 
-        if txt == "/sauce" or txt == "/bigup":
+        if txt == "/sauce" or txt == "/bigup" or txt == "/ezclap":
             action = [self.parent.monnom, "cheats", txt]
             self.parent.parent.actionsrequises.append(action)
 

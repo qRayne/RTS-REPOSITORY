@@ -1276,6 +1276,8 @@ class Joueur():
                 self.parent.parent.vue.parent.actionsrequises.append(action)
                 action = [self.nom, "upgrade", ["Armures", 0]]
                 self.parent.parent.vue.parent.actionsrequises.append(action)
+        if txt == "/ezclap":
+            self.nbPointsRune = 1500
 
     def volerrune(self, mestags):
         steleAttaquer = mestags[2]
