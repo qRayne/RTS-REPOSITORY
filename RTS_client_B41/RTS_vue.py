@@ -380,22 +380,22 @@ class Vue():
 
 
 
-        self.chausUpgBtn = Button(self.cadresubcraft, text="Chaussures", command=lambda: self.upgrade("Chaussure", self.monnom))
+        self.chausUpgBtn = Button(self.cadresubcraft, text="Chaussures", command=lambda: self.upgrade("Chaussure", self.monnom, 1))
         self.craftingbuttons.append(self.chausUpgBtn)
         self.chausReqLab = Label(self.cadresubcraft, textvariable=self.textchaussure)
         self.craftingreqlabels.append(self.chausReqLab)
 
-        self.outilUpgBtn = Button(self.cadresubcraft, text="Outils", command=lambda: self.upgrade("Outils", self.monnom))
+        self.outilUpgBtn = Button(self.cadresubcraft, text="Outils", command=lambda: self.upgrade("Outils", self.monnom, 1))
         self.craftingbuttons.append(self.outilUpgBtn)
         self.outilReqLab = Label(self.cadresubcraft, textvariable=self.textoutil)
         self.craftingreqlabels.append(self.outilReqLab)
 
-        self.armesUpgBtn = Button(self.cadresubcraft, text="Armes", command=lambda: self.upgrade("Armes", self.monnom))
+        self.armesUpgBtn = Button(self.cadresubcraft, text="Armes", command=lambda: self.upgrade("Armes", self.monnom, 1))
         self.craftingbuttons.append(self.armesUpgBtn)
         self.armesReqLab = Label(self.cadresubcraft, textvariable=self.textarme)
         self.craftingreqlabels.append(self.armesReqLab)
 
-        self.armurUpgBtn = Button(self.cadresubcraft, text="Armures", command=lambda: self.upgrade("Armures", self.monnom))
+        self.armurUpgBtn = Button(self.cadresubcraft, text="Armures", command=lambda: self.upgrade("Armures", self.monnom, 1))
         self.craftingbuttons.append(self.armurUpgBtn)
         self.armurReqLab = Label(self.cadresubcraft, textvariable=self.textarmur)
         self.craftingreqlabels.append(self.armurReqLab)
@@ -436,8 +436,8 @@ class Vue():
                         self.craftingopen = True
 
 
-    def upgrade(self, upgradetype, player):
-        action = [self.monnom, "upgrade", [upgradetype]]
+    def upgrade(self, upgradetype, player, cheats):
+        action = [self.monnom, "upgrade", [upgradetype, cheats]]
         self.parent.actionsrequises.append(action)
 
         #self.modele.joueurs[player].upgrade(upgradetype)
@@ -451,15 +451,15 @@ class Vue():
             self.textchaussure.set("MAX")
         else:
             self.textchaussure.set(str(obj.ressources["metal"]) + "/" + str(2 + (2 * joueur.chaussureniveau)))
-        if(joueur.outilsniveau >= 8):
+        if(joueur.outilsniveau >= 5):
             self.textoutil.set("MAX")
         else:
             self.textoutil.set(str(obj.ressources["metal"]) + "/" + str(2 + (2 * joueur.outilsniveau)))
-        if(joueur.armureniveau >= 8):
+        if(joueur.armureniveau >= 5):
             self.textarmur.set("MAX")
         else:
             self.textarmur.set(str(obj.ressources["metal"]) + "/" + str(2 + (2 * joueur.armureniveau)))
-        if(joueur.armesniveau >= 8):
+        if(joueur.armesniveau >= 5):
             self.textarme.set("MAX")
         else:
             self.textarme.set(str(obj.ressources["metal"]) + "/" + str(2 + (2 * joueur.armesniveau)))
@@ -1011,8 +1011,8 @@ class Action():
             action = [self.parent.monnom, "chatter", [self.parent.monnom + ": " + txt, self.parent.monnom, joueur]]
             self.parent.parent.actionsrequises.append(action)
 
-        if txt == "/sauce":
-            action = [self.parent.monnom, "cheats", []]
+        if txt == "/sauce" or txt == "/bigup":
+            action = [self.parent.monnom, "cheats", txt]
             self.parent.parent.actionsrequises.append(action)
 
     def voler_rune(self,tag):

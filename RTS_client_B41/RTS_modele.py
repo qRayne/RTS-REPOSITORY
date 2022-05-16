@@ -1218,29 +1218,30 @@ class Joueur():
 
     def upgrade(self, param):
         upgradetype = param[0]
+        cheats = param[1]
         clemaison = self.batiments["maison"].keys()
         cle = list(clemaison)[0]
         maison = self.batiments["maison"][cle]
 
         if upgradetype == "Chaussure":
             if (self.chaussureniveau < 5):
-                maison.ressources["metal"] -= 2 + (self.chaussureniveau * 2)
+                maison.ressources["metal"] -= 2 + (self.chaussureniveau * 2) * cheats
                 self.chaussureniveau += 1
                 print("Chaussures upgraded")
         if upgradetype == "Armes":
             if (self.armesniveau < 8):
-                maison.ressources["metal"] -= 2 + (self.armesniveau * 2)
+                maison.ressources["metal"] -= 2 + (self.armesniveau * 2) * cheats
                 self.armesniveau += 1
                 print("Armes upgraded")
         if upgradetype == "Outils":
             if (self.outilsniveau < 8):
-                maison.ressources["metal"] -= 2 + (self.outilsniveau * 2)
+                maison.ressources["metal"] -= 2 + (self.outilsniveau * 2) * cheats
                 self.outilsniveau += 1
                 print("Outils upgraded")
         if upgradetype == "Armures":
             if (self.armureniveau < 8):
-                maison.ressources["metal"] -= 2 + (self.armureniveau * 2)
-                self.outilsniveau += 1
+                maison.ressources["metal"] -= 2 + (self.armureniveau * 2) * cheats
+                self.armureniveau += 1
                 print("Armures upgraded")
 
         for i in self.persos:
@@ -1256,11 +1257,22 @@ class Joueur():
 
         self.parent.parent.vue.update_upgrade_labels()
 
-    def cheats(self, tags):
-        self.mamaison.ressources["metal"] += 100
-        self.mamaison.ressources["bois"] += 100
-        self.mamaison.ressources["pierre"] += 100
-        self.mamaison.ressources["nourriture"] += 100
+    def cheats(self, txt):
+        if txt == "/sauce":
+            self.mamaison.ressources["metal"] += 100
+            self.mamaison.ressources["bois"] += 100
+            self.mamaison.ressources["pierre"] += 100
+            self.mamaison.ressources["nourriture"] += 100
+        if txt == "/bigup":
+            for i in range(5):
+                action = [self.nom, "upgrade", ["Chaussure", 0]]
+                self.parent.parent.vue.parent.actionsrequises.append(action)
+                action = [self.nom, "upgrade", ["Armes", 0]]
+                self.parent.parent.vue.parent.actionsrequises.append(action)
+                action = [self.nom, "upgrade", ["Outils", 0]]
+                self.parent.parent.vue.parent.actionsrequises.append(action)
+                action = [self.nom, "upgrade", ["Armures", 0]]
+                self.parent.parent.vue.parent.actionsrequises.append(action)
 
     def volerrune(self, mestags):
         steleAttaquer = mestags[2]
