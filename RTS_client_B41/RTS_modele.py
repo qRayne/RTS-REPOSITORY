@@ -57,10 +57,10 @@ class MaisonLongue(Batiment):
         self.largeur = 128
         self.progres = 0
         self.tier = 1
-        self.ressources = {"metal": 1000,
-                           "bois": 1000,
-                           "nourriture": 1000,
-                           "pierre": 1000
+        self.ressources = {"metal": 0,
+                           "bois": 0,
+                           "nourriture": 50,
+                           "pierre": 0
                            }
 
 
@@ -135,9 +135,9 @@ class Stele:
         self.tempsA = int(time.time())
         self.x = x
         self.y = y
+        self.nbDeplacementVersStele = 0
         self.steleLevelString = "stele" + str(self.rune)
         self.imageStele = self.parent.parent.vue.images[self.steleLevelString]
-
 
     def incrementerPoints(self):
         if self.rune >= 1:
@@ -518,7 +518,6 @@ class Perso():
         else:
             self.vie = 0
 
-
     def test_etat_du_sol(self, x1, y1):
         ######## SINON TROUVER VOIE DE CONTOURNEMENT
         # ici oncalcule sur quelle case on circule
@@ -560,6 +559,7 @@ class Perso():
     def mourir(self):
         self.etat = "mort"
         self.position_visee = None
+
 
 class Guerrier(Perso):
     def __init__(self, parent, id, maison, couleur, x, y, montype):
@@ -615,6 +615,7 @@ class Guerrier(Perso):
         self.etat = "mort"
         self.position_visee = None
 
+
 class Archer(Perso):
     def __init__(self, parent, id, maison, couleur, x, y, montype):
         Perso.__init__(self, parent, id, maison, couleur, x, y, montype)
@@ -655,7 +656,6 @@ class Archer(Perso):
             if reponse <= self.champchasse:
                 self.actioncourante = "modeAttaque"
                 print("mode attaque")
-
 
     def mode_Attaque(self):
         if self.delaiattaque == 0:
@@ -895,7 +895,6 @@ class Ouvrier(Perso):
                 self.actioncourante = "retourbatimentmere"
                 self.position_visee = [self.batimentmere.x, self.batimentmere.y]
 
-
     ## PAS UTILISER POUR LE MOMENT
     def scanner_alentour(self):
         dicojoueurs = self.parent.parent.joueurs
@@ -953,7 +952,7 @@ class Caseregion():
 class Joueur():
     classespersos = {"ouvrier": Ouvrier,
                      "soldat": Guerrier,
-                     "archer": Archer }
+                     "archer": Archer}
 
     def __init__(self, parent, id, nom, couleur, x, y, nbPointsRune):
         self.parent = parent
@@ -962,7 +961,7 @@ class Joueur():
         self.x = x
         self.y = y
         self.nbPointsRune = nbPointsRune
-        self.steleAttaquer = None # variable qui enregistre la stèle attaquer = sert à la suite
+        self.steleAttaquer = None  # variable qui enregistre la stèle attaquer = sert à la suite
         self.couleur = couleur
         self.monchat = []
         self.stele = None
@@ -1000,7 +999,8 @@ class Joueur():
                         "creeroutils": self.creer_outils,
                         "volerrune": self.volerrune,
                         "attaquerennemis": self.attaquer_ennemis,
-                        "upgrade": self.upgrade
+                        "upgrade": self.upgrade,
+                        "cheats": self.cheats
                         }
         # on va creer une maison comme centre pour le joueur
         self.creer_point_origine(x, y)
@@ -1045,7 +1045,7 @@ class Joueur():
 
     def chatter(self, param):
         txt, envoyeur, receveur = param
-        self.parent.joueurs[envoyeur].monchat.append(txt)
+        #self.parent.joueurs[envoyeur].monchat.append(txt)
         self.parent.joueurs[receveur].monchat.append(txt)
         self.parent.joueurs[envoyeur].chatneuf = 1
         self.parent.joueurs[receveur].chatneuf = 1
@@ -1134,7 +1134,7 @@ class Joueur():
             siteconstruction = SiteConstruction(self, id, pos[0], pos[1], sorte)
             self.batiments["siteconstruction"][id] = siteconstruction
             self.persos["ouvrier"][perso].construire_site_construction(siteconstruction)
-                # self.persos["ouvrier"][i].construire_batiment(siteconstruction)
+            # self.persos["ouvrier"][i].construire_batiment(siteconstruction)
 
     def installer_batiment(self, batiment):
         # self.batiments['siteconstruction'].pop(batiment.id)
@@ -1217,29 +1217,34 @@ class Joueur():
 
     def upgrade(self, param):
         upgradetype = param[0]
+        cheats = param[1]
         clemaison = self.batiments["maison"].keys()
         cle = list(clemaison)[0]
         maison = self.batiments["maison"][cle]
 
         if upgradetype == "Chaussure":
-            if (self.chaussureniveau < 5):
-                maison.ressources["metal"] -= 2 + (self.chaussureniveau * 2)
+            cost = 2 + (self.chaussureniveau * 2) * cheats
+            if (self.chaussureniveau < 5 and maison.ressources["metal"] >= cost):
+                maison.ressources["metal"] -= cost
                 self.chaussureniveau += 1
                 print("Chaussures upgraded")
         if upgradetype == "Armes":
-            if (self.armesniveau < 8):
-                maison.ressources["metal"] -= 2 + (self.armesniveau * 2)
+            cost = 2 + (self.armesniveau * 2) * cheats
+            if (self.armesniveau < 8  and maison.ressources["metal"] >= cost):
+                maison.ressources["metal"] -= cost
                 self.armesniveau += 1
                 print("Armes upgraded")
         if upgradetype == "Outils":
-            if (self.outilsniveau < 8):
-                maison.ressources["metal"] -= 2 + (self.outilsniveau * 2)
+            cost = 2 + (self.outilsniveau * 2) * cheats
+            if (self.outilsniveau < 8  and maison.ressources["metal"] >= cost):
+                maison.ressources["metal"] -= cost
                 self.outilsniveau += 1
                 print("Outils upgraded")
         if upgradetype == "Armures":
-            if (self.armureniveau < 8):
-                maison.ressources["metal"] -= 2 + (self.armureniveau * 2)
-                self.outilsniveau += 1
+            cost = 2 + (self.armureniveau * 2) * cheats
+            if (self.armureniveau < 8  and maison.ressources["metal"] >= cost):
+                maison.ressources["metal"] -= cost
+                self.armureniveau += 1
                 print("Armures upgraded")
 
         for i in self.persos:
@@ -1255,6 +1260,25 @@ class Joueur():
 
         self.parent.parent.vue.update_upgrade_labels()
 
+    def cheats(self, txt):
+        if txt == "/sauce":
+            self.mamaison.ressources["metal"] += 100
+            self.mamaison.ressources["bois"] += 100
+            self.mamaison.ressources["pierre"] += 100
+            self.mamaison.ressources["nourriture"] += 100
+        if txt == "/bigup":
+            for i in range(5):
+                action = [self.nom, "upgrade", ["Chaussure", 0]]
+                self.parent.parent.vue.parent.actionsrequises.append(action)
+                action = [self.nom, "upgrade", ["Armes", 0]]
+                self.parent.parent.vue.parent.actionsrequises.append(action)
+                action = [self.nom, "upgrade", ["Outils", 0]]
+                self.parent.parent.vue.parent.actionsrequises.append(action)
+                action = [self.nom, "upgrade", ["Armures", 0]]
+                self.parent.parent.vue.parent.actionsrequises.append(action)
+        if txt == "/ezclap":
+            self.nbPointsRune = 1500
+
     def volerrune(self, mestags):
         steleAttaquer = mestags[2]
 
@@ -1265,7 +1289,7 @@ class Joueur():
                     self.steleAttaquer = stele
                     self.persos['soldat'][mestags[3][0]].deplacer([stele.x, stele.y])
                     steleid = stele.id
-                    if stele.rune >= 0:
+                    if stele.rune > 0:
                         stele.rune -= 1
                     self.parent.parent.vue.update_stele_image(steleid, "Enleve", stele.rune)
 
@@ -1275,10 +1299,10 @@ class Joueur():
             persoY = self.persos['soldat'][mestags[3][0]].y
             if self.stele.x == persoX and self.stele.y == persoY:
                 if self.persos['soldat'][mestags[3][0]].etat == "vivant":  # le soldat reste vivant durant la traverser
-                    if self.stele.rune <= 4:
+                    if self.stele.rune < 4:
                         self.stele.rune += 1
                     self.parent.parent.vue.update_stele_image(self.stele.id, "Ajoute", self.stele.rune)
-                    self.steleAttaquer = None # la rune est voler : revenir à l'état de départ
+                    self.steleAttaquer = None  # la rune est voler : revenir à l'état de départ
                 else:
                     self.stele.rune -= 1
                     steleAttaquer.rune += 1
@@ -1574,7 +1598,7 @@ class Partie():
             self.joueurs[i].stele = Stele(self, self.joueurs[i], id, rune, x + 100, y + 100)
             self.listeStele.append(self.joueurs[i].stele)
         id = get_prochain_id()
-        self.steleneutre = Stele(self, None, id, 2, self.aireX/2, self.aireY/2)
+        self.steleneutre = Stele(self, None, id, 2, self.aireX / 2, self.aireY / 2)
         self.listeStele.append(self.steleneutre)
 
     def deplacer(self):

@@ -359,7 +359,7 @@ class Vue():
         self.joueurs=ttk.Combobox(self.cadreparler,
                                   values=list(self.modele.joueurs.keys()))
         self.entreechat=Entry(self.cadreparler,width=20)
-        self.entreechat.bind("<Return>")#,self.action.envoyerchat)
+        self.entreechat.bind("<Return>",self.action.envoyer_chat)
         self.joueurs.pack(expand=1,fill=X)
         self.entreechat.pack(expand=1,fill=X)
         self.cadreparler.pack(expand=1,fill=X)
@@ -380,22 +380,22 @@ class Vue():
 
 
 
-        self.chausUpgBtn = Button(self.cadresubcraft, text="Chaussures", command=lambda: self.upgrade("Chaussure", self.monnom))
+        self.chausUpgBtn = Button(self.cadresubcraft, text="Chaussures", command=lambda: self.upgrade("Chaussure", self.monnom, 1))
         self.craftingbuttons.append(self.chausUpgBtn)
         self.chausReqLab = Label(self.cadresubcraft, textvariable=self.textchaussure)
         self.craftingreqlabels.append(self.chausReqLab)
 
-        self.outilUpgBtn = Button(self.cadresubcraft, text="Outils", command=lambda: self.upgrade("Outils", self.monnom))
+        self.outilUpgBtn = Button(self.cadresubcraft, text="Outils", command=lambda: self.upgrade("Outils", self.monnom, 1))
         self.craftingbuttons.append(self.outilUpgBtn)
         self.outilReqLab = Label(self.cadresubcraft, textvariable=self.textoutil)
         self.craftingreqlabels.append(self.outilReqLab)
 
-        self.armesUpgBtn = Button(self.cadresubcraft, text="Armes", command=lambda: self.upgrade("Armes", self.monnom))
+        self.armesUpgBtn = Button(self.cadresubcraft, text="Armes", command=lambda: self.upgrade("Armes", self.monnom, 1))
         self.craftingbuttons.append(self.armesUpgBtn)
         self.armesReqLab = Label(self.cadresubcraft, textvariable=self.textarme)
         self.craftingreqlabels.append(self.armesReqLab)
 
-        self.armurUpgBtn = Button(self.cadresubcraft, text="Armures", command=lambda: self.upgrade("Armures", self.monnom))
+        self.armurUpgBtn = Button(self.cadresubcraft, text="Armures", command=lambda: self.upgrade("Armures", self.monnom, 1))
         self.craftingbuttons.append(self.armurUpgBtn)
         self.armurReqLab = Label(self.cadresubcraft, textvariable=self.textarmur)
         self.craftingreqlabels.append(self.armurReqLab)
@@ -436,8 +436,8 @@ class Vue():
                         self.craftingopen = True
 
 
-    def upgrade(self, upgradetype, player):
-        action = [self.monnom, "upgrade", [upgradetype]]
+    def upgrade(self, upgradetype, player, cheats):
+        action = [self.monnom, "upgrade", [upgradetype, cheats]]
         self.parent.actionsrequises.append(action)
 
         #self.modele.joueurs[player].upgrade(upgradetype)
@@ -451,15 +451,15 @@ class Vue():
             self.textchaussure.set("MAX")
         else:
             self.textchaussure.set(str(obj.ressources["metal"]) + "/" + str(2 + (2 * joueur.chaussureniveau)))
-        if(joueur.outilsniveau >= 8):
+        if(joueur.outilsniveau >= 5):
             self.textoutil.set("MAX")
         else:
             self.textoutil.set(str(obj.ressources["metal"]) + "/" + str(2 + (2 * joueur.outilsniveau)))
-        if(joueur.armureniveau >= 8):
+        if(joueur.armureniveau >= 5):
             self.textarmur.set("MAX")
         else:
             self.textarmur.set(str(obj.ressources["metal"]) + "/" + str(2 + (2 * joueur.armureniveau)))
-        if(joueur.armesniveau >= 8):
+        if(joueur.armesniveau >= 5):
             self.textarme.set("MAX")
         else:
             self.textarme.set(str(obj.ressources["metal"]) + "/" + str(2 + (2 * joueur.armesniveau)))
@@ -468,10 +468,8 @@ class Vue():
         mastele = self.canevas.find_withtag(steleid)
 
         steleimage = "stele" + str(steleNumber)
-        self.canevas.itemconfig(mastele, image=images[steleimage])
-
-
-
+        if steleNumber >= 0:
+            self.canevas.itemconfig(mastele, image=images[steleimage])
 
     def creer_spawn_guerrier(self):
         self.cadrespawnguerrier = Frame(self.canevas, height = 25, width = 110, bg ="black")
@@ -733,12 +731,6 @@ class Vue():
                         for b in self.modele.joueurs[j].persos[p][k].javelots:
                             self.canevas.create_image(b.x, b.y, image=self.images[b.image],
                                                       tags=("mobile", j, b.id, "", type(b).__name__, ""))
-
-                    # dessiner fleche de l'archer
-                    if p == "soldat":
-                        for b in self.modele.joueurs[j].persos[p][k].knifes:
-                            self.canevas.create_image(b.x, b.y, image=self.images[b.image],
-                                                      tags=("mobile", j, b.id, "", type(p).__name__, ""))
 
                     if p == "archer":
                         for b in self.modele.joueurs[j].persos[p][k].fleches:
@@ -1011,6 +1003,10 @@ class Action():
             action = [self.parent.monnom, "chatter", [self.parent.monnom + ": " + txt, self.parent.monnom, joueur]]
             self.parent.parent.actionsrequises.append(action)
 
+        if txt == "/sauce" or txt == "/bigup" or txt == "/ezclap":
+            action = [self.parent.monnom, "cheats", txt]
+            self.parent.parent.actionsrequises.append(action)
+
     def voler_rune(self,tag):
         if self.persochoisi:
             for i in self.parent.modele.joueurs[self.parent.monnom].persos["soldat"]:
@@ -1022,7 +1018,7 @@ class Action():
     def chatter(self):
         if self.chaton == 0:
             x1, x2 = self.parent.scrollH.get()
-            x3 = self.parent.modele.aireX * x1
+            x3 = self.parent.modele.aireX * x2
             y1, y2 = self.parent.scrollV.get()
             y3 = self.parent.modele.aireY * y1
             self.parent.cadrechaton = self.parent.canevas.create_window(x3, y3, window=self.parent.cadrechat, anchor=NE)
