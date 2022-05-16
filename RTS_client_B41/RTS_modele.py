@@ -1046,7 +1046,7 @@ class Joueur():
 
     def chatter(self, param):
         txt, envoyeur, receveur = param
-        self.parent.joueurs[envoyeur].monchat.append(txt)
+        #self.parent.joueurs[envoyeur].monchat.append(txt)
         self.parent.joueurs[receveur].monchat.append(txt)
         self.parent.joueurs[envoyeur].chatneuf = 1
         self.parent.joueurs[receveur].chatneuf = 1
