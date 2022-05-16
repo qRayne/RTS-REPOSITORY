@@ -1223,23 +1223,27 @@ class Joueur():
         maison = self.batiments["maison"][cle]
 
         if upgradetype == "Chaussure":
-            if (self.chaussureniveau < 5):
-                maison.ressources["metal"] -= 2 + (self.chaussureniveau * 2) * cheats
+            cost = 2 + (self.chaussureniveau * 2) * cheats
+            if (self.chaussureniveau < 5 and maison.ressources["metal"] >= cost):
+                maison.ressources["metal"] -= cost
                 self.chaussureniveau += 1
                 print("Chaussures upgraded")
         if upgradetype == "Armes":
-            if (self.armesniveau < 8):
-                maison.ressources["metal"] -= 2 + (self.armesniveau * 2) * cheats
+            cost = 2 + (self.armesniveau * 2) * cheats
+            if (self.armesniveau < 8  and maison.ressources["metal"] >= cost):
+                maison.ressources["metal"] -= cost
                 self.armesniveau += 1
                 print("Armes upgraded")
         if upgradetype == "Outils":
-            if (self.outilsniveau < 8):
-                maison.ressources["metal"] -= 2 + (self.outilsniveau * 2) * cheats
+            cost = 2 + (self.outilsniveau * 2) * cheats
+            if (self.outilsniveau < 8  and maison.ressources["metal"] >= cost):
+                maison.ressources["metal"] -= cost
                 self.outilsniveau += 1
                 print("Outils upgraded")
         if upgradetype == "Armures":
-            if (self.armureniveau < 8):
-                maison.ressources["metal"] -= 2 + (self.armureniveau * 2) * cheats
+            cost = 2 + (self.armureniveau * 2) * cheats
+            if (self.armureniveau < 8  and maison.ressources["metal"] >= cost):
+                maison.ressources["metal"] -= cost
                 self.armureniveau += 1
                 print("Armures upgraded")
 
