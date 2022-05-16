@@ -311,7 +311,7 @@ class Sapin(Biotope):
 
 
 class Hetre(Biotope):
-    typeressource = ['hetre']
+    typeressource = ['hetre', 'hetre2', 'hetre3', 'hetre4']
 
     def __init__(self, parent, id, monimg, x, y, montype, cleregion, posid):
         Biotope.__init__(self, parent, id, monimg, x, y, montype, cleregion, posid)
@@ -319,7 +319,7 @@ class Hetre(Biotope):
 
 
 class Bouleau(Biotope):
-    typeressource = ['bouleau']
+    typeressource = ['bouleau', 'bouleau2', 'bouleau3']
 
     def __init__(self, parent, id, monimg, x, y, montype, cleregion, posid):
         Biotope.__init__(self, parent, id, monimg, x, y, montype, cleregion, posid)
