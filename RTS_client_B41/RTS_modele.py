@@ -1292,8 +1292,6 @@ class Joueur():
                     if stele.rune > 0:
                         stele.rune -= 1
                     self.parent.parent.vue.update_stele_image(steleid, "Enleve", stele.rune)
-                    if stele.rune == 0:
-                        stele.nbDeplacementVersStele += 1
 
         elif self.stele.id == steleAttaquer and self.steleAttaquer is not None:
             self.persos['soldat'][mestags[3][0]].deplacer([self.stele.x, self.stele.y])
@@ -1301,7 +1299,7 @@ class Joueur():
             persoY = self.persos['soldat'][mestags[3][0]].y
             if self.stele.x == persoX and self.stele.y == persoY:
                 if self.persos['soldat'][mestags[3][0]].etat == "vivant":  # le soldat reste vivant durant la traverser
-                    if self.stele.rune < 4 and self.steleAttaquer.nbDeplacementVersStele == 1:
+                    if self.stele.rune < 4:
                         self.stele.rune += 1
                     self.parent.parent.vue.update_stele_image(self.stele.id, "Ajoute", self.stele.rune)
                     self.steleAttaquer = None  # la rune est voler : revenir à l'état de départ
