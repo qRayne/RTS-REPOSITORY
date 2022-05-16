@@ -57,10 +57,10 @@ class MaisonLongue(Batiment):
         self.largeur = 128
         self.progres = 0
         self.tier = 1
-        self.ressources = {"metal": 1000,
-                           "bois": 1000,
-                           "nourriture": 1000,
-                           "pierre": 1000
+        self.ressources = {"metal": 0,
+                           "bois": 0,
+                           "nourriture": 50,
+                           "pierre": 0
                            }
 
 
@@ -1000,7 +1000,8 @@ class Joueur():
                         "creeroutils": self.creer_outils,
                         "volerrune": self.volerrune,
                         "attaquerennemis": self.attaquer_ennemis,
-                        "upgrade": self.upgrade
+                        "upgrade": self.upgrade,
+                        "cheats": self.cheats
                         }
         # on va creer une maison comme centre pour le joueur
         self.creer_point_origine(x, y)
@@ -1254,6 +1255,12 @@ class Joueur():
                     p.qteramassage = 1 + (self.outilsniveau)
 
         self.parent.parent.vue.update_upgrade_labels()
+
+    def cheats(self, tags):
+        self.mamaison.ressources["metal"] += 100
+        self.mamaison.ressources["bois"] += 100
+        self.mamaison.ressources["pierre"] += 100
+        self.mamaison.ressources["nourriture"] += 100
 
     def volerrune(self, mestags):
         steleAttaquer = mestags[2]
