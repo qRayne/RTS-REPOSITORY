@@ -468,10 +468,8 @@ class Vue():
         mastele = self.canevas.find_withtag(steleid)
 
         steleimage = "stele" + str(steleNumber)
-        self.canevas.itemconfig(mastele, image=images[steleimage])
-
-
-
+        if steleNumber >= 0:
+            self.canevas.itemconfig(mastele, image=images[steleimage])
 
     def creer_spawn_guerrier(self):
         self.cadrespawnguerrier = Frame(self.canevas, height = 25, width = 110, bg ="black")
@@ -733,12 +731,6 @@ class Vue():
                         for b in self.modele.joueurs[j].persos[p][k].javelots:
                             self.canevas.create_image(b.x, b.y, image=self.images[b.image],
                                                       tags=("mobile", j, b.id, "", type(b).__name__, ""))
-
-                    # dessiner fleche de l'archer
-                    if p == "soldat":
-                        for b in self.modele.joueurs[j].persos[p][k].knifes:
-                            self.canevas.create_image(b.x, b.y, image=self.images[b.image],
-                                                      tags=("mobile", j, b.id, "", type(p).__name__, ""))
 
                     if p == "archer":
                         for b in self.modele.joueurs[j].persos[p][k].fleches:
