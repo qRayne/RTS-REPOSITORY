@@ -421,6 +421,7 @@ class Perso():
         self.image = couleur[0] + "_" + montype + self.dir
         self.x = x
         self.y = y
+        self.selecty = y
         self.montype = montype
         self.cible = None
         self.position_visee = None
@@ -486,7 +487,7 @@ class Perso():
             # self.test_etat_du_sol(x1, y1)
             ######## FIN DE TEST POUR SURFACE MARCHEE
             # si tout ba bien on continue avec la nouvelle valeur
-            self.x, self.y = x1, y1
+            self.x, self.y, self.selecty = x1, y1, y1
             # ici on test pour voir si nous rendu a la cible (en deca de la longueur de notre pas)
             dist = Helper.calcDistance(self.x, self.y, x, y)
             if dist <= self.vitesse:

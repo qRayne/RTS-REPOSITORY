@@ -724,7 +724,7 @@ class Vue():
                                                   tags=("mobile", j, k, "perso", type(i).__name__, ""))
 
                     if k in self.action.persochoisi:  # i.montype
-                        self.canevas.create_image(i.x-5, i.y, image=self.images["uniteselect"], tags=("mobile",))
+                        self.canevas.create_image(i.x, i.selecty, image=self.images["uniteselect"], tags=("mobile",))
 
                     # dessiner javelot de l'ouvrier
                     if p == "ouvrier" and i.etat != "mort":
