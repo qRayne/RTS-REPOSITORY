@@ -570,6 +570,8 @@ class Guerrier(Perso):
         self.cible = None
         self.angle = None
         self.etat = "vivant"
+        self.runique = False
+        self.originerunevolee = None
         self.distancefeumax = 50
         self.typeressource = None
         self.distancefeu = 50
@@ -586,7 +588,8 @@ class Guerrier(Perso):
         self.cibleennemi = None
         self.etats_et_actions = {"ciblerennemi": self.cibler_ennemis,
                                  "bouger": self.bouger,
-                                 "modeAttaque": self.mode_Attaque
+                                 "modeAttaque": self.mode_Attaque,
+                                 "volerrune": self.voler_rune
                                  }
 
     def chasser_ennemis(self, ennemis, actiontype):
@@ -612,9 +615,9 @@ class Guerrier(Perso):
                 self.actioncourante = None
                 self.cible = None
 
-    def mourir(self):
-        self.etat = "mort"
-        self.position_visee = None
+    def voler_rune(self, tags):
+        tag1, tag2, tag3, tag4 = tags
+
 
 
 class Archer(Perso):
@@ -998,7 +1001,7 @@ class Joueur():
                         "creerarmes": self.creer_armes,
                         "creerarmures": self.creer_armures,
                         "creeroutils": self.creer_outils,
-                        "volerrune": self.volerrune,
+                        "volerrune": self.voler_rune,
                         "attaquerennemis": self.attaquer_ennemis,
                         "upgrade": self.upgrade,
                         "cheats": self.cheats
@@ -1280,36 +1283,41 @@ class Joueur():
         if txt == "/ezclap":
             self.nbPointsRune = 1500
 
-    def volerrune(self, mestags):
-        steleAttaquer = mestags[2]
-
-        if self.stele.id != steleAttaquer:
-            print("stèle ennemie qui va être attaquer ")
-            for stele in self.parent.listeStele:
-                if steleAttaquer == stele.id:
-                    self.steleAttaquer = stele
-                    self.persos['soldat'][mestags[3][0]].deplacer([stele.x, stele.y])
-                    steleid = stele.id
-                    if stele.rune > 0:
-                        stele.rune -= 1
-                    self.parent.parent.vue.update_stele_image(steleid, "Enleve", stele.rune)
-
-        elif self.stele.id == steleAttaquer and self.steleAttaquer is not None:
-            self.persos['soldat'][mestags[3][0]].deplacer([self.stele.x, self.stele.y])
-            persoX = self.persos['soldat'][mestags[3][0]].x
-            persoY = self.persos['soldat'][mestags[3][0]].y
-            if self.stele.x == persoX and self.stele.y == persoY:
-                if self.persos['soldat'][mestags[3][0]].etat == "vivant":  # le soldat reste vivant durant la traverser
-                    if self.stele.rune < 4:
-                        self.stele.rune += 1
-                    self.parent.parent.vue.update_stele_image(self.stele.id, "Ajoute", self.stele.rune)
-                    self.steleAttaquer = None  # la rune est voler : revenir à l'état de départ
-                else:
-                    self.stele.rune -= 1
-                    steleAttaquer.rune += 1
-                    self.parent.parent.vue.update_stele_image(steleAttaquer.id, "Enleve", steleAttaquer.rune)
-        else:
-            print("impossible d'attaquer sa propre stèle")
+    def voler_rune(self, mestags):
+        objetstele, tagvide, stelecible, persochoisi = mestags
+        soldatchoisi = self.persos["soldat"][persochoisi[0]]
+        if not soldatchoisi.runique and self.stele.id is not stelecible:
+            soldatchoisi.runique = True
+            soldatchoisi.originerunevolee = stelecible
+    #     steleAttaquer = mestags[2]
+    #
+    #     if self.stele.id != steleAttaquer:
+    #         print("stèle ennemie qui va être attaquer ")
+    #         for stele in self.parent.listeStele:
+    #             if steleAttaquer == stele.id:
+    #                 self.steleAttaquer = stele
+    #                 self.persos['soldat'][mestags[3][0]].deplacer([stele.x, stele.y])
+    #                 steleid = stele.id
+    #                 if stele.rune > 0:
+    #                     stele.rune -= 1
+    #                 self.parent.parent.vue.update_stele_image(steleid, "Enleve", stele.rune)
+    #
+    #     elif self.stele.id == steleAttaquer and self.steleAttaquer is not None:
+    #         self.persos['soldat'][mestags[3][0]].deplacer([self.stele.x, self.stele.y])
+    #         persoX = self.persos['soldat'][mestags[3][0]].x
+    #         persoY = self.persos['soldat'][mestags[3][0]].y
+    #         if self.stele.x == persoX and self.stele.y == persoY:
+    #             if self.persos['soldat'][mestags[3][0]].etat == "vivant":  # le soldat reste vivant durant la traverser
+    #                 if self.stele.rune < 4:
+    #                     self.stele.rune += 1
+    #                 self.parent.parent.vue.update_stele_image(self.stele.id, "Ajoute", self.stele.rune)
+    #                 self.steleAttaquer = None  # la rune est voler : revenir à l'état de départ
+    #             else:
+    #                 self.stele.rune -= 1
+    #                 steleAttaquer.rune += 1
+    #                 self.parent.parent.vue.update_stele_image(steleAttaquer.id, "Enleve", steleAttaquer.rune)
+    #     else:
+    #         print("impossible d'attaquer sa propre stèle")
 
 
 #######################  LE MODELE est la partie #######################

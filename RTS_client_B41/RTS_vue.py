@@ -584,16 +584,16 @@ class Vue():
     ##FONCTIONS D'AFFICHAGES##################################
     def afficher_depart(self):
         # afficher les couleurs des biomes au sol
-        for i in list(self.modele.cartecase):
-            for j in i:
-                taillecase = self.modele.taillecase
-                x = j.x * taillecase
-                y = j.y * taillecase
-
-                if j.montype == "foretnoire" or j.montype == "pin" or j.montype == "sapin":
-                    self.canevas.create_rectangle(x, y, x + taillecase, y + taillecase, outline="", fill="DarkOliveGreen3")
-                elif j.montype == "prairie" or j.montype == "pierre" or j.montype == "caillous" or j.montype == "rocher":
-                    self.canevas.create_rectangle(x, y, x + taillecase, y + taillecase, outline="", fill="khaki")
+        # for i in list(self.modele.cartecase):
+        #     for j in i:
+        #         taillecase = self.modele.taillecase
+        #         x = j.x * taillecase
+        #         y = j.y * taillecase
+        #
+        #         if j.montype == "foretnoire" or j.montype == "pin" or j.montype == "sapin":
+        #             self.canevas.create_rectangle(x, y, x + taillecase, y + taillecase, outline="", fill="DarkOliveGreen3")
+        #         elif j.montype == "prairie" or j.montype == "pierre" or j.montype == "caillous" or j.montype == "rocher":
+        #             self.canevas.create_rectangle(x, y, x + taillecase, y + taillecase, outline="", fill="khaki")
 
         #afficher les biotopes
         self.modele.listebiotopes.sort(key = lambda c: c.y)
@@ -720,8 +720,9 @@ class Vue():
                     if i.etat == "mort":
                         self.canevas.create_image(i.x, i.y, image=self.images["joueur_mort"], tags=("mobile",))
                     else:  # i.montype
-                        self.canevas.create_image(i.x, i.y, anchor=S, image=self.images[i.image],
+                        ceperso = self.canevas.create_image(i.x, i.y, anchor=S, image=self.images[i.image],
                                                   tags=("mobile", j, k, "perso", type(i).__name__, ""))
+                        self.canevas.tag_lower(ceperso)
 
                     if k in self.action.persochoisi:  # i.montype
                         self.canevas.create_image(i.x, i.selecty, image=self.images["uniteselect"], tags=("mobile",))
@@ -995,8 +996,7 @@ class Action():
             action = [self.parent.parent.monnom, "attaquerennemis", [tag[1], tag[4], tag[2], self.persochoisi]]
             self.parent.parent.actionsrequises.append(action)
 
-
-    def envoyer_chat(self,evt):
+    def envoyer_chat(self, evt):
         txt = self.parent.entreechat.get()
         joueur = self.parent.joueurs.get()
         if joueur:
@@ -1007,13 +1007,15 @@ class Action():
             action = [self.parent.monnom, "cheats", txt]
             self.parent.parent.actionsrequises.append(action)
 
-    def voler_rune(self,tag):
+    def voler_rune(self, tag):
         if self.persochoisi:
             for i in self.parent.modele.joueurs[self.parent.monnom].persos["soldat"]:
                 for j in self.persochoisi:
                     if j == i:
                         action = [self.parent.parent.monnom, "volerrune", [tag[1], tag[4], tag[2], self.persochoisi]]
+                        print(action)
                         self.parent.parent.actionsrequises.append(action)
+                        break
 
     def chatter(self):
         if self.chaton == 0:
@@ -1030,7 +1032,7 @@ class Action():
             self.chaton=0
 
     def aider(self):
-        if self.aideon==0:
+        if self.aideon == 0:
             x1, x2 = self.parent.scrollH.get()
             x3 = self.parent.modele.aireX*x2
             y1, y2 = self.parent.scrollV.get()
