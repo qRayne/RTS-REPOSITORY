@@ -278,7 +278,7 @@ class Caillous(Biotope):
 
 
 class Pierre(Biotope):
-    typeressource = ['pierre1']
+    typeressource = ['pierre1', 'pierre2', 'pierre3']
 
     def __init__(self, parent, id, monimg, x, y, montype, cleregion, posid):
         Biotope.__init__(self, parent, id, monimg, x, y, montype, cleregion, posid)
@@ -295,7 +295,7 @@ class Rocher(Biotope):
 
 
 class Pin(Biotope):
-    typeressource = ['pin']
+    typeressource = ['pin', 'pin2', 'pin3']
 
     def __init__(self, parent, id, monimg, x, y, montype, cleregion, posid):
         Biotope.__init__(self, parent, id, monimg, x, y, montype, cleregion, posid)
@@ -303,7 +303,7 @@ class Pin(Biotope):
 
 
 class Sapin(Biotope):
-    typeressource = ['sapin']
+    typeressource = ['sapin', 'sapin2', 'sapin3']
 
     def __init__(self, parent, id, monimg, x, y, montype, cleregion, posid):
         Biotope.__init__(self, parent, id, monimg, x, y, montype, cleregion, posid)
@@ -1406,8 +1406,8 @@ class Partie():
         self.regions = {}
         self.regionstypes = [["hetre", 20, 2, 1, "forest green"],
                              ["bouleau", 20, 2, 1, "forest green"],
-                             ["pin", 100, 4, 2, "forest green"],
-                             ["sapin", 75, 4, 2, "forest green"],
+                             ["pin", 50, 5, 5, "forest green"],
+                             ["sapin", 50, 5, 5, "forest green"],
                              ["caillous", 15, 2, 1, "gray60"],
                              ["pierre", 15, 2, 1, "gray60"],
                              ["rocher", 15, 2, 1, "gray60"]
