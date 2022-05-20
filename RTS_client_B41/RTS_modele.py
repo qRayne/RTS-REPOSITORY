@@ -955,7 +955,7 @@ class Caseregion():
 
 class Joueur():
     classespersos = {"ouvrier": Ouvrier,
-                     "soldat": Guerrier,
+                     "guerrier": Guerrier,
                      "archer": Archer}
 
     def __init__(self, parent, id, nom, couleur, x, y, nbPointsRune):
@@ -975,7 +975,7 @@ class Joueur():
         self.ressources = {}
         self.mamaison = None
         self.persos = {"ouvrier": {},
-                       "soldat": {},
+                       "guerrier": {},
                        "archer": {},
                        "chevalier": {},
                        "druide": {},
@@ -1285,10 +1285,10 @@ class Joueur():
 
     def voler_rune(self, mestags):
         objetstele, tagvide, stelecible, persochoisi = mestags
-        soldatchoisi = self.persos["soldat"][persochoisi[0]]
-        if not soldatchoisi.runique and self.stele.id is not stelecible:
-            soldatchoisi.runique = True
-            soldatchoisi.originerunevolee = stelecible
+        guerrierchoisi = self.persos["guerrier"][persochoisi[0]]
+        if not guerrierchoisi.runique and self.stele.id is not stelecible:
+            guerrierchoisi.runique = True
+            guerrierchoisi.originerunevolee = stelecible
     #     steleAttaquer = mestags[2]
     #
     #     if self.stele.id != steleAttaquer:
@@ -1391,7 +1391,7 @@ class Partie():
                                  "fournaise": Fournaise,
                                  "ferme": Ferme}
         self.classespersos = {"ouvrier": Ouvrier,
-                              "soldat": Guerrier,
+                              "guerrier": Guerrier,
                               "archer": Archer}
         self.ressourcemorte = []
         self.msggeneral = None

@@ -32,7 +32,6 @@ class Vue():
         self.textoutil = StringVar()
         self.textarme = StringVar()
         self.textarmur = StringVar()
-        self.imagestele = []
 
 
         self.cadreactif=None
@@ -606,7 +605,7 @@ class Vue():
             else:
                 monitem=self.canevas.create_image(i.x,i.y,image=self.images[i.img],anchor=S,
                                                   tags=("statique","",i.id,"biotope",i.montype,""))
-                                                  #tags=("mobile","",i.id,)
+                #self.canevas.tag_raise(monitem)
 
         self.modele.listebiotopes=[]
 
@@ -634,13 +633,18 @@ class Vue():
         for j in self.modele.joueurs.keys():
             for i in self.modele.joueurs[j].batiments["maison"].keys():
                 m = self.modele.joueurs[j].batiments["maison"][i]
-                coul = self.modele.joueurs[j].couleur[0]
-                self.canevas.create_image(m.x, m.y, image=self.images[coul+"_maison"],
-                                          tags=("statique", j, m.id, "batiment",m.montype, ""))
 
+                coul = self.modele.joueurs[j].couleur[0]
                 s = self.modele.joueurs[j].stele
-                self.imagestele.append(self.canevas.create_image(s.x, s.y, image=s.imageStele,
-                                                                 tags=("statique", s, s.id, "stele", "", "")))
+
+                #afficher les steles des joueurs
+                mastele = self.canevas.create_image(s.x, s.y, image=s.imageStele, tags=("statique", s, s.id, "stele", "", ""))
+                self.canevas.tag_lower(mastele)
+
+                #afficher les batiments (maison)
+                batiment = self.canevas.create_image(m.x, m.y, image=self.images[coul + "_maison"],
+                                                     tags=("statique", j, m.id, "batiment", m.montype, ""))
+                self.canevas.tag_lower(batiment)
 
                 # afficher sur minicarte
                 coul=self.modele.joueurs[j].couleur[1]
@@ -648,8 +652,7 @@ class Vue():
                 y1 = (m.y/self.modele.aireY) * self.tailleminicarte
                 self.minicarte.create_rectangle(x1-2, y1-2, x1+2, y1+2, fill=coul, tags=(j, m.id, "artefact", "maison"))
         s = self.modele.listeStele[-1]
-        self.imagestele.append(self.canevas.create_image(s.x, s.y, image=s.imageStele,
-                                                         tags=("statique", s, s.id, "stele", "", "")))
+        self.canevas.create_image(s.x, s.y, image=s.imageStele, tags=("statique", s, s.id, "stele", "", ""))
 
 
 
@@ -664,6 +667,7 @@ class Vue():
         print(self.parent.monnom)
         chose = self.canevas.create_image(batiment.x, batiment.y, image=self.images[batiment.image], tags=("statique", self.parent.monnom, batiment.id, "batiment", batiment.montype, ""))
         x0, y0, x2, y2 = self.canevas.bbox(chose)
+        self.canevas.tag_lower(chose)
 
         coul = self.modele.joueurs[joueur].couleur[1]
         x1 = (batiment.x/self.modele.aireX)*self.tailleminicarte
@@ -909,7 +913,7 @@ class Vue():
 
     def creer_guerrier(self, x, y, mestags):
         pos = (self.canevas.canvasx(x), self.canevas.canvasy(y))
-        action = [self.parent.monnom, "creerperso", ["soldat", mestags[4], mestags[2], pos]]
+        action = [self.parent.monnom, "creerperso", ["guerrier", mestags[4], mestags[2], pos]]
         self.parent.actionsrequises.append(action)
 
     def creer_archer(self, x, y, mestags):
@@ -1010,7 +1014,7 @@ class Action():
 
     def voler_rune(self, tag):
         if self.persochoisi:
-            for i in self.parent.modele.joueurs[self.parent.monnom].persos["soldat"]:
+            for i in self.parent.modele.joueurs[self.parent.monnom].persos["guerrier"]:
                 for j in self.persochoisi:
                     if j == i:
                         action = [self.parent.parent.monnom, "volerrune", [tag[1], tag[4], tag[2], self.persochoisi]]
