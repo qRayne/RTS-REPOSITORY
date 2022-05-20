@@ -306,7 +306,8 @@ class Vue():
         self.canevas.tag_bind("fournaise", "<Button-1>", self.ramasser_ressource)
         self.canevas.tag_bind("forge", "<Button-3>", self.subcrafting)
         self.canevas.tag_bind("caserne", "<Button-3>", self.spawn_guerrier)
-        self.canevas.tag_bind("stele","<Double-Button-3>",self.volerrune)
+        # Ne fonctionne pas pour l'instant
+        # self.canevas.tag_bind("stele","<Double-Button-3>",self.volerrune)
         self.canevas.bind("<Control-Button-1>", self.parent.montrer_stats)
         self.canevas.tag_bind("perso", "<Button-3>", self.attaquer_ennemis)
 
