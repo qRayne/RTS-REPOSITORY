@@ -577,7 +577,7 @@ class Vue():
     def creer_cadre_ouvrier(self,coul,artefacts):
         self.cadreouvrier=Frame(self.canevasaction)
         for i in artefacts:
-            btn=Button(self.cadreouvrier,text=i,image=self.images[coul+i])
+            btn=Button(self.cadreouvrier,text=i,image=self.images[coul+i+"_icone"])
             btn.bind("<Button>",self.batir_artefact)
             btn.pack()
 
@@ -706,11 +706,10 @@ class Vue():
                     self.canevas.create_image(x, y, anchor=CENTER, image=self.images["siteX"],
                                               tags=("mobile", j, p, "batiment", type(s).__name__, ""))
                     # l = longueur de la barre de délai total d'apres la largeur du batiment, pl = longueur de la barre de progres
-                    l = (s.longueur/2)
                     pl = ((s.delaimax - s.delai) / s.delaimax) * s.longueur
-                    self.canevas.create_rectangle(x - l, y + 20, x + l, y + 30, fill="black", outline="white",
+                    self.canevas.create_rectangle(x - 75, y + 20, x + 75, y + 30, fill="black", outline="white",
                                               tags=("mobile", ))
-                    self.canevas.create_rectangle(x - l, y + 21, (x - l) + pl, y + 29, fill="lime",
+                    self.canevas.create_rectangle(x - 75, y + 21, (x - 75) + pl, y + 29, fill="lime",
                                                   tags=("mobile",))
                 else:  # s.montype
                     self.canevas.create_image(s.x, s.y, anchor=CENTER, image=self.images["EnConstruction"],
